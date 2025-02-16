@@ -33,3 +33,12 @@ body {
 .textarea-custom::-webkit-scrollbar-track {
   background: transparent;
 }
+
+.message-area::-webkit-scrollbar {
+  width: 8px;
+}
+
+.message-area::-webkit-scrollbar-thumb {
+  background: rgba(131, 131, 131, 0.5);
+  border-radius: 10px;
+}

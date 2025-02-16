@@ -57,7 +57,7 @@ const InputPrompt = ( { onSendMessage }: { onSendMessage: (message:string) => vo
       <input type="text" name="role" value={role} readOnly className="hidden"/>
       <label
         htmlFor="file"
-        className="absolute bottom-2.5 left-3 hover:bg-[rgba(187,187,187,0.1)] hover:cursor-pointer hover:bg-neutral-600 p-2 w-8 h-8 rounded-full flex items-center justify-center"
+        className="absolute bottom-2.5 left-3 hover:bg-[rgb(240,240,240)] hover:cursor-pointer hover:bg-neutral-600 p-2 w-8 h-8 rounded-full flex items-center justify-center"
       >
         <UploadIcon className="w-6 h-6 text-neutral-700" />
       </label>
