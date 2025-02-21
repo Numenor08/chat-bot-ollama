@@ -1,18 +1,20 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useContext } from "react";
 import { PaperPlaneIcon, UploadIcon } from "@radix-ui/react-icons";
+import ModelContext from "@/app/store/ContextProvider";
 
-const InputPrompt = ( { onSendMessage }: { onSendMessage: (message:string) => void }) => {
+const InputPrompt = ( { onSendMessage }: { onSendMessage: (message:string, model:string) => void }) => {
   const [prompt, setPrompt] = useState<string>("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const role = "user";
+  const { model } = useContext( ModelContext )
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!prompt.trim()) return;
-    onSendMessage(prompt);
+    onSendMessage(prompt, model);
     setPrompt("");
     resetHeight();
   };
@@ -57,7 +59,7 @@ const InputPrompt = ( { onSendMessage }: { onSendMessage: (message:string) => vo
       <input type="text" name="role" value={role} readOnly className="hidden"/>
       <label
         htmlFor="file"
-        className="absolute bottom-2.5 left-3 hover:bg-[rgb(240,240,240)] hover:cursor-pointer hover:bg-neutral-600 p-2 w-8 h-8 rounded-full flex items-center justify-center"
+        className="absolute bottom-2.5 left-3 hover:bg-[rgb(210,210,210)] hover:cursor-pointer p-2 w-8 h-8 rounded-full flex items-center justify-center"
       >
         <UploadIcon className="w-6 h-6 text-neutral-700" />
       </label>

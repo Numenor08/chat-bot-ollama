@@ -5,7 +5,6 @@ const MessageList = ({ messages }: { messages: { role: "user" | "bot"; text: str
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
     const [isAutoScroll, setIsAutoScroll] = useState(true);
-
     useEffect(() => {
         if (isAutoScroll) {
             messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

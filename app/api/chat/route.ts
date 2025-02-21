@@ -3,7 +3,7 @@ import ollama from "ollama";
 
 export async function POST(req: NextRequest) {
     try {
-        const { prompt } = await req.json();
+        const { prompt, model } = await req.json();
 
         if (!prompt.trim()) {
             return new Response("Prompt tidak boleh kosong", { status: 400 });
@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
 
         // Streaming dari Ollama
         const stream = await ollama.chat({
-            model: "deepseek-r1",
+            model: model || "deepseek-r1",
             messages: [{ role: "user", content: prompt.trim() }],
             stream: true,
         });

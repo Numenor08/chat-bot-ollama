@@ -1,23 +1,62 @@
 "use client";
+import { useEffect, useState, useContext } from "react";
+import { TriangleDownIcon } from "@radix-ui/react-icons";
+import ModelContext from "@/app/store/ContextProvider";
 
-import { useState } from "react";
-import { Pencil1Icon } from "@radix-ui/react-icons";
+interface models {
+    name: string;
+    model: string;
+    modified_at: string;
+    size: number;
+    digest: string;
+    details: object;
+}
 
 const ApiRoute = () => {
-    const [apiRoute, setApiRoute] = useState<string>("localhost:11434");
+    const [listModels, setListModels] = useState<models[] | null>(null);
+    const [isOpen, setIsOpen] = useState(false);
+    const { model, setModel } = useContext(ModelContext);
 
-    const handleIconClick = () => {
-        const newApiRoute = prompt("Enter new API route:", apiRoute);
-        if (newApiRoute) {
-            setApiRoute(newApiRoute);
-        }
+    useEffect(() => {
+        const fetchModels = async () => {
+            try {
+                const res = await fetch("/api/chat/model");
+                if (!res.ok) throw new Error("Failed to fetch");
+                const data = await res.json();
+                setListModels(data.models);
+            } catch (error) {
+                console.error("Fetch error:", error);
+            }
+        };
+        fetchModels();
+    }, []);
+
+    const handleSelectClick = () => {
+        setIsOpen(!isOpen);
     };
 
+    const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setModel(e.target.value);
+    }
+
     return (
-        <div className="fixed flex items-center gap-1 top-0 bg-sky-100 rounded-b-xl py-2 px-4">
-            <p>🤖</p>
-            <p>{apiRoute}</p>
-            <Pencil1Icon className="opacity-30 hover:cursor-pointer hover:opacity-80" onClick={handleIconClick} />
+        <div className="fixed top-2 flex bg-white border overflow-y-auto border-gray-300 rounded-3xl shadow">
+            <select
+                className="appearance-none focus:outline-none p-3 pl-4 pr-10"
+                onClick={handleSelectClick}
+                onBlur={() => setIsOpen(false)}
+                onChange={handleSelectChange}
+                value={model}
+            >
+                {!listModels ? (
+                    <option disabled>No models installed</option>
+                ) : (
+                    listModels.map((model, i) => (
+                        <option value={model.name} key={i}>{model.name}</option>
+                    ))
+                )}
+            </select>
+            <TriangleDownIcon className={`w-5 h-5 absolute right-3 top-1/2 -translate-y-1/2 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
         </div>
     );
 };

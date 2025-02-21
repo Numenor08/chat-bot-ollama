@@ -7,7 +7,7 @@ import InputPrompt from "@/app/ui/input-prompt";
 const ChatApp = () => {
     const [messages, setMessages] = useState<{ role: "user" | "bot"; text: string }[]>([]);
 
-    const handleSendMessage = async (prompt: string) => {
+    const handleSendMessage = async (prompt: string, model: string) => {
         if (!prompt.trim()) return;
 
         setMessages((prev) => [...prev, { role: "user", text: prompt }]);
@@ -17,7 +17,7 @@ const ChatApp = () => {
             const res = await fetch("/api/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ prompt }),
+                body: JSON.stringify({ prompt, model }),
             });
 
             if (!res.body) throw new Error("Something went wrong");
