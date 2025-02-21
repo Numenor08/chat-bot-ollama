@@ -9,7 +9,7 @@ const MessageList = ({ messages }: { messages: { role: "user" | "bot"; text: str
         if (isAutoScroll) {
             messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
         }
-    }, [messages]);
+    }, [messages, isAutoScroll]);
 
     const handleScroll = () => {
         if (!containerRef.current) return;
