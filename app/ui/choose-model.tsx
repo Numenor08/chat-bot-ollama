@@ -12,7 +12,7 @@ interface models {
     details: object;
 }
 
-const ApiRoute = () => {
+const ChooseModel = () => {
     const [listModels, setListModels] = useState<models[] | null>(null);
     const [isOpen, setIsOpen] = useState(false);
     const { model, setModel } = useContext(ModelContext);
@@ -24,6 +24,7 @@ const ApiRoute = () => {
                 if (!res.ok) throw new Error("Failed to fetch");
                 const data = await res.json();
                 setListModels(data.models);
+                setModel(data.models[0].name);
             } catch (error) {
                 console.error("Fetch error:", error);
             }
@@ -61,4 +62,4 @@ const ApiRoute = () => {
     );
 };
 
-export default ApiRoute;
+export default ChooseModel;

@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
 
         // Streaming dari Ollama
         const stream = await ollama.chat({
-            model: model || "deepseek-r1",
+            model: model,
             messages: [{ role: "user", content: prompt.trim() }],
             stream: true,
         });
