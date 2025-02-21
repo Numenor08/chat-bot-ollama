@@ -3,21 +3,31 @@
 import { useState } from "react";
 import MessageList from "@/app/ui/message";
 import InputPrompt from "@/app/ui/input-prompt";
+import { Messages } from "@/app/types/types"
 
 const ChatApp = () => {
-    const [messages, setMessages] = useState<{ role: "user" | "bot"; text: string }[]>([]);
-
+    const [messages, setMessages] = useState<Messages[]>([]);
+    console.log(messages);
     const handleSendMessage = async (prompt: string, model: string) => {
         if (!prompt.trim()) return;
 
-        setMessages((prev) => [...prev, { role: "user", text: prompt }]);
-        setMessages((prev) => [...prev, { role: "bot", text: "" }]); // Placeholder bot
+        const newMessage: Messages = { role: "user", content: prompt };
 
+        setMessages((prev) => {
+            const updatedMessages: Messages[] = [...prev, newMessage];
+            sendMessageToBackend(updatedMessages, model);
+            return updatedMessages;
+        });
+
+        setMessages((prev) => [...prev, { role: "assistant", content: "" }]); // Placeholder bot
+    };
+
+    const sendMessageToBackend = async (updatedMessages: Messages[], model: string) => {
         try {
             const res = await fetch("/api/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ prompt, model }),
+                body: JSON.stringify({ messages: updatedMessages, model }),
             });
 
             if (!res.body) throw new Error("Something went wrong");
@@ -41,7 +51,7 @@ const ChatApp = () => {
                         botReply += content;
                         setMessages((prev) => {
                             const updatedMessages = [...prev];
-                            updatedMessages[updatedMessages.length - 1] = { role: "bot", text: botReply };
+                            updatedMessages[updatedMessages.length - 1] = { role: "assistant", content: botReply };
                             return updatedMessages;
                         });
                     } catch (error) {

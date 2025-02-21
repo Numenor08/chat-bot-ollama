@@ -3,16 +3,19 @@ import ollama from "ollama";
 
 export async function POST(req: NextRequest) {
     try {
-        const { prompt, model } = await req.json();
+        const { messages, model } = await req.json();
 
-        if (!prompt.trim()) {
-            return new Response("Prompt tidak boleh kosong", { status: 400 });
+        if (!messages || !model) {
+            return new Response(JSON.stringify({ error: "Invalid parameter" }), {
+                status: 400,
+                headers: { "Content-Type": "application/json" },
+            });
         }
 
         // Streaming dari Ollama
         const stream = await ollama.chat({
             model: model,
-            messages: [{ role: "user", content: prompt.trim() }],
+            messages: messages,
             stream: true,
         });
 

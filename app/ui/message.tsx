@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { Messages } from "@/app/types/types"
 
-const MessageList = ({ messages }: { messages: { role: "user" | "bot"; text: string }[] }) => {
+const MessageList = ({ messages }: { messages: Messages[] }) => {
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
     const [isAutoScroll, setIsAutoScroll] = useState(true);
@@ -28,7 +29,7 @@ const MessageList = ({ messages }: { messages: { role: "user" | "bot"; text: str
             {messages.map((msg, index) => (
                 <div key={index} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} mb-2`}>
                     <div className={`whitespace-pre-wrap break-words px-4 py-2 my-4 rounded-lg text-black ${msg.role === "user" ? "bg-neutral-200 max-w-[70%]" : "bg-none max-w-[80%] text-lg"} animate-fade-in`}>
-                        {msg.text || <span className="animate-pulse">...</span>}
+                        {msg.content || <span className="animate-pulse">...</span>}
                     </div>
                 </div>
             ))}
