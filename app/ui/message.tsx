@@ -10,6 +10,7 @@ const MessageList = ({ messages }: { messages: Messages[] }) => {
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
     const [isAutoScroll, setIsAutoScroll] = useState(true);
+    console.log(messages);
 
     useEffect(() => {
         if (isAutoScroll) {
@@ -21,14 +22,14 @@ const MessageList = ({ messages }: { messages: Messages[] }) => {
         if (!containerRef.current) return;
 
         const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
-        const isAtBottom = scrollHeight - scrollTop <= clientHeight + 25; // Buffer 10px agar tidak terlalu sensitif
+        const isAtBottom = scrollHeight - scrollTop <= clientHeight + 25; // Buffer 25px
 
         setIsAutoScroll(isAtBottom);
     };
 
-    const renderContent = (content: string) => {
+    const renderContent = (content: string, reasoningTime: number = 0) => {
         if (content.includes("<think>") && !content.includes("</think>")) {
-            content += "</think>"; // Add the closing tag if it's missing
+            content += "</think>";
         }
         
         const thinkTagMatch = content.match(/<think>([\s\S]*?)<\/think>/);
@@ -37,9 +38,9 @@ const MessageList = ({ messages }: { messages: Messages[] }) => {
             const remainingContent = content.replace(thinkTagMatch[0], '').trim();
             return (
                 <>
-                    <ThoughtMessage thought={thoughtContent} />
+                    <ThoughtMessage reasoningTime={reasoningTime}  thought={thoughtContent} />
                     {remainingContent && (
-                        <div className="prose text-sm/6">
+                        <div className="prose text-sm/6 w-full">
                             <ReactMarkdown>{remainingContent}</ReactMarkdown>
                         </div>
                     )}
@@ -47,7 +48,7 @@ const MessageList = ({ messages }: { messages: Messages[] }) => {
             );
         }
         return (
-            <div className="prose text-sm/6">
+            <div className="prose text-sm/6 w-full">
                 <ReactMarkdown>{content.trim()}</ReactMarkdown>
             </div>
         );
@@ -60,9 +61,9 @@ const MessageList = ({ messages }: { messages: Messages[] }) => {
             className={`${inter.className} text-sm w-full h-auto max-h-[36rem] overflow-y-auto p-4 message-area`}>
             {messages.map((msg, index) => (
                 <div key={index} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} mb-2`}>
-                    <div className={`break-words px-4 py-2 my-8 rounded-lg text-black ${msg.role === "user" ? "bg-gray-100 max-w-[70%]" : "bg-none max-w-[100%]"} animate-fade-in`}>
+                    <div className={`break-words px-4 py-2 my-8 rounded-lg text-black ${msg.role === "user" ? "bg-gray-100 max-w-[80%]" : "bg-none max-w-[90%]"} animate-fade-in`}>
                         {msg.content ? (
-                            renderContent(msg.content)
+                            renderContent(msg.content, msg?.reasoningTime)
                         ) : (
                             <ThreeDots color="#141414" height={15} width={15} />
                         )}
