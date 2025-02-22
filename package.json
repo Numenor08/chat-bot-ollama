@@ -14,7 +14,8 @@
     "ollama": "^0.5.13",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-loader-spinner": "^6.1.6"
+    "react-loader-spinner": "^6.1.6",
+    "react-markdown": "^10.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

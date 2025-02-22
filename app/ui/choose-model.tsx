@@ -42,7 +42,7 @@ const ChooseModel = () => {
     }
 
     return (
-        <div className="fixed top-2 flex bg-white border overflow-y-auto border-gray-300 rounded-3xl shadow">
+        <div className="fixed z-50 top-2 flex bg-white border overflow-y-auto border-gray-300 rounded-3xl shadow">
             <select
                 className="appearance-none focus:outline-none p-3 pl-4 pr-10"
                 onClick={handleSelectClick}
