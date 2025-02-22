@@ -4,14 +4,11 @@ import React from 'react'
 import { TailSpin } from 'react-loader-spinner'
 import { inter } from '@/app/fonts'
 import { GlobeIcon, CaretDownIcon } from '@radix-ui/react-icons'
-import { useState, useContext } from 'react'
+import { useState } from 'react'
 import ReactMarkdown from 'react-markdown'
-import ModelContext from "@/app/store/ContextProvider";
 
-const ThoughtMessage = ({ thought, reasoningTime } : { thought: string, reasoningTime: number } ) => {
+const ThoughtMessage = ({ thought, reasoningTime, isActive } : { thought: string, reasoningTime: number, isActive: boolean } ) => {
     const [isExpanded, setIsExpanded] = useState(true)
-    const { isThinking } = useContext(ModelContext)
-
     if (!thought) {
         return null
     }
@@ -21,14 +18,16 @@ const ThoughtMessage = ({ thought, reasoningTime } : { thought: string, reasonin
             <div className="flex items-center gap-2 w-min px-3 py-1.5 mb-2 bg-gray-100 rounded-lg shadow-sm hover:cursor-pointer hover:bg-gray-200"
             onClick={() => setIsExpanded(!isExpanded)}>
                 <GlobeIcon className='w-3 h-3' />
-                <span className="text-xs text-nowrap text-black">Reasoning {reasoningTime && !isThinking ? `for ${reasoningTime} second` : ""}</span>
+                <span className="text-xs text-nowrap text-black">
+                    Reasoning {reasoningTime && !isActive ? `for ${reasoningTime} second` : ""}
+                </span>
                 <TailSpin
-                    visible={isThinking}
+                    visible={isActive}
                     color="currentColor"
                     height={12}
                     width={12}
                     ariaLabel="loading"
-                    wrapperClass="inline-block ml-2"
+                    wrapperClass="inline-block"
                 />
                 <CaretDownIcon className={`${isExpanded ? '' : 'rotate-180'}`} />
             </div>

@@ -1,16 +1,17 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useContext } from "react";
 import { Messages } from "@/app/types/types";
 import ThoughtMessage from "@/app/ui/thought-message";
 import { inter } from "@/app/fonts";
 import { ThreeDots } from "react-loader-spinner";
 import ReactMarkdown from "react-markdown";
+import ModelContext from "@/app/store/ContextProvider";
 
 const MessageList = ({ messages }: { messages: Messages[] }) => {
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
     const [isAutoScroll, setIsAutoScroll] = useState(true);
-    console.log(messages);
+    const { isThinking } = useContext(ModelContext);
 
     useEffect(() => {
         if (isAutoScroll) {
@@ -27,7 +28,7 @@ const MessageList = ({ messages }: { messages: Messages[] }) => {
         setIsAutoScroll(isAtBottom);
     };
 
-    const renderContent = (content: string, reasoningTime: number = 0) => {
+    const renderContent = (content: string, reasoningTime: number = 0, index: number) => {
         if (content.includes("<think>") && !content.includes("</think>")) {
             content += "</think>";
         }
@@ -38,7 +39,11 @@ const MessageList = ({ messages }: { messages: Messages[] }) => {
             const remainingContent = content.replace(thinkTagMatch[0], '').trim();
             return (
                 <>
-                    <ThoughtMessage reasoningTime={reasoningTime}  thought={thoughtContent} />
+                    <ThoughtMessage 
+                    reasoningTime={reasoningTime}  
+                    thought={thoughtContent}
+                    isActive={index === messages.length - 1 && isThinking} 
+                    />
                     {remainingContent && (
                         <div className="prose text-sm/6 w-full">
                             <ReactMarkdown>{remainingContent}</ReactMarkdown>
@@ -63,7 +68,7 @@ const MessageList = ({ messages }: { messages: Messages[] }) => {
                 <div key={index} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} mb-2`}>
                     <div className={`break-words px-4 py-2 my-8 rounded-lg text-black ${msg.role === "user" ? "bg-gray-100 max-w-[80%]" : "bg-none max-w-[90%]"} animate-fade-in`}>
                         {msg.content ? (
-                            renderContent(msg.content, msg?.reasoningTime)
+                            renderContent(msg.content, msg?.reasoningTime, index)
                         ) : (
                             <ThreeDots color="#141414" height={15} width={15} />
                         )}
