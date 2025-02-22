@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { Messages } from "@/app/types/types"
+import ThoughtMessage from "@/app/ui/thought-message";
+import { inter } from "@/app/fonts";
 
 const MessageList = ({ messages }: { messages: Messages[] }) => {
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -25,10 +27,11 @@ const MessageList = ({ messages }: { messages: Messages[] }) => {
         <div
             ref={containerRef}
             onScroll={handleScroll}
-            className="w-full h-auto max-h-[36rem] overflow-y-auto p-4 message-area">
+            className={`${inter.className} text-xs/5 w-full h-auto max-h-[36rem] overflow-y-auto p-4 message-area`}>
+            <ThoughtMessage thought=""></ThoughtMessage>
             {messages.map((msg, index) => (
                 <div key={index} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} mb-2`}>
-                    <div className={`whitespace-pre-wrap break-words px-4 py-2 my-4 rounded-lg text-black ${msg.role === "user" ? "bg-neutral-200 max-w-[70%]" : "bg-none max-w-[80%] text-lg"} animate-fade-in`}>
+                    <div className={`whitespace-pre-wrap break-words px-4 py-2 my-4 rounded-lg text-black ${msg.role === "user" ? "bg-gray-100 max-w-[70%]" : "bg-none max-w-[80%]"} animate-fade-in`}>
                         {msg.content || <span className="animate-pulse">...</span>}
                     </div>
                 </div>
