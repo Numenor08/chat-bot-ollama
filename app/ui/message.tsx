@@ -6,6 +6,61 @@ import { inter } from "@/app/fonts";
 import { ThreeDots } from "react-loader-spinner";
 import ReactMarkdown from "react-markdown";
 import ModelContext from "@/app/store/ContextProvider";
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { dracula } from 'react-syntax-highlighter/dist/cjs/styles/prism'
+import { CopyIcon } from "@radix-ui/react-icons";
+
+const ChatMarkdown = ({ content, className }: { content: string, className: string }) => {
+    return (
+        <div className={className}>
+            <ReactMarkdown
+                components={{
+                    pre({ children }) {
+                        return (
+                            <div className={`not-prose m-0`}>
+                                {children}
+                            </div>
+                        );
+                    },
+                    code({ inline, className, children, ...props }: { inline?: boolean, className?: string, children?: React.ReactNode }) {
+                        const match = /language-(\w+)/.exec(className || '');
+                        console.log(typeof children);
+                        return !inline && match ? (
+                            <>
+                                <div className="bg-[#50505a] text-gray-400 mb-0 rounded-t-xl px-4 py-2 flex items-center justify-between">
+                                    <p className="hover:text-gray-200">{match[1]}</p>
+                                    <CopyIcon className="w-4 h-4 ml-2 cursor-pointer hover:text-white" onClick={() => navigator.clipboard.writeText(String(children))} />
+                                </div>
+                                <SyntaxHighlighter
+                                    customStyle={{
+                                        overflow: "auto",
+                                        borderTopLeftRadius: "0rem",
+                                        borderTopRightRadius: "0rem",
+                                        borderBottomLeftRadius: "0.75rem",
+                                        borderBottomRightRadius: "0.75rem",
+                                        marginTop: 0,
+                                        scrollbarWidth: "thin",
+                                        scrollbarColor: "rgba(131, 131, 131, 0.5) transparent",
+                                    }}
+                                    style={dracula}
+                                    language={match[1]}
+                                    PreTag="div"
+                                    {...props}>
+                                    {String(children).replace(/\n$/, "")}
+                                </SyntaxHighlighter>
+                            </>
+                        ) : (
+                            <code className={className} {...props}>
+                                {children}
+                            </code>
+                        )
+                    }
+                }}>
+                {content}
+            </ReactMarkdown>
+        </div>
+    );
+}
 
 const MessageList = ({ messages }: { messages: Messages[] }) => {
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -23,7 +78,7 @@ const MessageList = ({ messages }: { messages: Messages[] }) => {
         if (!containerRef.current) return;
 
         const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
-        const isAtBottom = scrollHeight - scrollTop <= clientHeight + 25; // Buffer 25px
+        const isAtBottom = scrollHeight - scrollTop <= clientHeight + 12; // Buffer 12px
 
         setIsAutoScroll(isAtBottom);
     };
@@ -32,30 +87,26 @@ const MessageList = ({ messages }: { messages: Messages[] }) => {
         if (content.includes("<think>") && !content.includes("</think>")) {
             content += "</think>";
         }
-        
+
         const thinkTagMatch = content.match(/<think>([\s\S]*?)<\/think>/);
         if (thinkTagMatch) {
             const thoughtContent = thinkTagMatch[1].trim();
             const remainingContent = content.replace(thinkTagMatch[0], '').trim();
             return (
                 <>
-                    <ThoughtMessage 
-                    reasoningTime={reasoningTime}  
-                    thought={thoughtContent}
-                    isActive={index === messages.length - 1 && isThinking} 
+                    <ThoughtMessage
+                        reasoningTime={reasoningTime}
+                        thought={thoughtContent}
+                        isActive={index === messages.length - 1 && isThinking}
                     />
                     {remainingContent && (
-                        <div className="prose text-sm/6 w-full">
-                            <ReactMarkdown>{remainingContent}</ReactMarkdown>
-                        </div>
+                        <ChatMarkdown className="prose text-sm/6 w-full" content={remainingContent} />
                     )}
                 </>
             );
         }
         return (
-            <div className="prose text-sm/6 w-full">
-                <ReactMarkdown>{content.trim()}</ReactMarkdown>
-            </div>
+            <ChatMarkdown className="prose text-sm/6 w-full" content={content.trim()} />
         );
     };
 

@@ -20,6 +20,11 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Modify code Font */
+code {
+    font-family: 'JetBrains Mono', monospace !important;
+}
+
 /* Styling scrollbar agar mirip ChatGPT/Gemini */
 .textarea-custom::-webkit-scrollbar {
   width: 6px;
