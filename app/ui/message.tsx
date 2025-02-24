@@ -9,6 +9,7 @@ import ModelContext from "@/app/store/ContextProvider";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { dracula } from 'react-syntax-highlighter/dist/cjs/styles/prism'
 import { CopyIcon } from "@radix-ui/react-icons";
+import Image from 'next/image'
 
 const ChatMarkdown = ({ content, className }: { content: string, className: string }) => {
     return (
@@ -24,7 +25,6 @@ const ChatMarkdown = ({ content, className }: { content: string, className: stri
                     },
                     code({ inline, className, children, ...props }: { inline?: boolean, className?: string, children?: React.ReactNode }) {
                         const match = /language-(\w+)/.exec(className || '');
-                        console.log(typeof children);
                         return !inline && match ? (
                             <>
                                 <div className="bg-[#50505a] text-gray-400 mb-0 rounded-t-xl px-4 py-2 flex items-center justify-between">
@@ -117,12 +117,23 @@ const MessageList = ({ messages }: { messages: Messages[] }) => {
             className={`${inter.className} text-sm w-full h-auto max-h-[36rem] overflow-y-auto p-4 message-area`}>
             {messages.map((msg, index) => (
                 <div key={index} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} mb-2`}>
-                    <div className={`break-words px-4 py-2 my-8 rounded-lg text-black ${msg.role === "user" ? "bg-gray-100 max-w-[80%]" : "bg-none max-w-[90%]"} animate-fade-in`}>
-                        {msg.content ? (
-                            renderContent(msg.content, msg?.reasoningTime, index)
-                        ) : (
-                            <ThreeDots color="#141414" height={15} width={15} />
-                        )}
+                    <div className={`flex flex-col ${msg.role === "user" ? "items-end" : "items-start"}`}>
+                        <div className={`break-words px-4 py-2 my-8 rounded-lg text-black ${msg.role === "user" ? "bg-gray-100 max-w-[80%]" : "bg-none max-w-[90%]"} animate-fade-in`}>
+                            {msg.content ? (
+                                renderContent(msg.content, msg?.reasoningTime, index)
+                            ) : (
+                                <ThreeDots color="#141414" height={15} width={15} />
+                            )}
+                        </div>
+                            {msg.images && msg.images.length > 0 && (
+                                <Image
+                                src={`data:image/png;base64,${msg.images[0]}`}
+                                width={240}
+                                height={200}
+                                alt={`Image ${index}`}
+                                className="rounded-md w-auto max-w-80 max-h-60"
+                                />
+                            )}
                     </div>
                 </div>
             ))}
