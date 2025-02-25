@@ -170,7 +170,7 @@ const ChatApp = () => {
     };
 
     return (
-        <div className={`flex flex-col items-center ${messages.length > 0 ? "justify-between" : "justify-center"} h-screen py-4 w-[90%] min-w-80 max-w-[50rem] gap-8`}>
+        <div className={`flex flex-col items-center ${messages.length > 0 ? "justify-between" : "justify-center"} h-screen py-8 w-[90%] min-w-80 max-w-[50rem] gap-8`}>
             <h1 className={`text-4xl text-center ${messages.length > 0 ? "hidden" : ""}`}>
                 Write the prompt you want below <span className="text-3xl">👇</span>
             </h1>

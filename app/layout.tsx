@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { abel } from "@/app/fonts";
+import { inter } from "@/app/fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${abel.className} antialiased`}
+        className={`${inter.className} antialiased`}
       >
         {children}
       </body>

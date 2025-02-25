@@ -2,65 +2,10 @@
 import { useEffect, useRef, useState, useContext } from "react";
 import { Messages } from "@/app/types/types";
 import ThoughtMessage from "@/app/ui/thought-message";
-import { inter } from "@/app/fonts";
 import { ThreeDots } from "react-loader-spinner";
-import ReactMarkdown from "react-markdown";
 import ModelContext from "@/app/store/ContextProvider";
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { dracula } from 'react-syntax-highlighter/dist/cjs/styles/prism'
-import { CopyIcon } from "@radix-ui/react-icons";
 import Image from 'next/image'
-
-const ChatMarkdown = ({ content, className }: { content: string, className: string }) => {
-    return (
-        <div className={className}>
-            <ReactMarkdown
-                components={{
-                    pre({ children }) {
-                        return (
-                            <div className={`not-prose m-0`}>
-                                {children}
-                            </div>
-                        );
-                    },
-                    code({ inline, className, children, ...props }: { inline?: boolean, className?: string, children?: React.ReactNode }) {
-                        const match = /language-(\w+)/.exec(className || '');
-                        return !inline && match ? (
-                            <>
-                                <div className="bg-[#50505a] text-gray-400 mb-0 rounded-t-xl px-4 py-2 flex items-center justify-between">
-                                    <p className="hover:text-gray-200">{match[1]}</p>
-                                    <CopyIcon className="w-4 h-4 ml-2 cursor-pointer hover:text-white" onClick={() => navigator.clipboard.writeText(String(children))} />
-                                </div>
-                                <SyntaxHighlighter
-                                    customStyle={{
-                                        overflow: "auto",
-                                        borderTopLeftRadius: "0rem",
-                                        borderTopRightRadius: "0rem",
-                                        borderBottomLeftRadius: "0.75rem",
-                                        borderBottomRightRadius: "0.75rem",
-                                        marginTop: 0,
-                                        scrollbarWidth: "thin",
-                                        scrollbarColor: "rgba(131, 131, 131, 0.5) transparent",
-                                    }}
-                                    style={dracula}
-                                    language={match[1]}
-                                    PreTag="div"
-                                    {...props}>
-                                    {String(children).replace(/\n$/, "")}
-                                </SyntaxHighlighter>
-                            </>
-                        ) : (
-                            <code className={className} {...props}>
-                                {children}
-                            </code>
-                        )
-                    }
-                }}>
-                {content}
-            </ReactMarkdown>
-        </div>
-    );
-}
+import ChatMarkdown from "@/app/ui/chat-markdown";
 
 const MessageList = ({ messages }: { messages: Messages[] }) => {
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -114,7 +59,7 @@ const MessageList = ({ messages }: { messages: Messages[] }) => {
         <div
             ref={containerRef}
             onScroll={handleScroll}
-            className={`${inter.className} text-sm w-full h-auto max-h-[36rem] overflow-y-auto p-4 message-area`}>
+            className={`text-sm w-full h-auto max-h-[36rem] overflow-y-auto p-4 message-area`}>
             {messages.map((msg, index) => (
                 <div key={index} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} mb-2`}>
                     <div className={`flex flex-col ${msg.role === "user" ? "items-end" : "items-start"}`}>

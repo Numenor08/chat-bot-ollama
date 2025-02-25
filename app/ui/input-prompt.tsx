@@ -2,7 +2,6 @@
 
 import { useState, useRef, useContext } from "react";
 import { PaperPlaneIcon, ImageIcon, CrossCircledIcon } from "@radix-ui/react-icons";
-import { inter } from "@/app/fonts";
 import ModelContext from "@/app/store/ContextProvider";
 import Image from 'next/image'
 
@@ -70,7 +69,7 @@ const InputPrompt = ({ onSendMessage, handleCancelRequest }: { onSendMessage: (m
     <form
       ref={formRef}
       onSubmit={handleSubmit}
-      className={`${inter.className} text-sm relative w-full border rounded-3xl py-3 pl-12 pr-14 shadow-[0_4px_5px_-2px_rgb(0,0,0,0.1)] focus:shadow-[0_4px_5px_-1px_rgb(0,0,0,0.1)]`}
+      className={`text-sm relative w-full border rounded-3xl py-3 pl-12 pr-14 shadow-[0_4px_5px_-2px_rgb(0,0,0,0.1)] focus:shadow-[0_4px_5px_-1px_rgb(0,0,0,0.1)]`}
     >
       {image && (
         <div className="relative w-min min-w-24 min-h-16 mb-4">

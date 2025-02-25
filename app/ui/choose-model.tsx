@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useContext } from "react";
 import { TriangleDownIcon } from "@radix-ui/react-icons";
+import { abel } from "@/app/fonts";
 import ModelContext from "@/app/store/ContextProvider";
 
 interface models {
@@ -42,7 +43,7 @@ const ChooseModel = () => {
     }
 
     return (
-        <div className="fixed z-50 top-2 flex bg-white border overflow-y-auto border-gray-300 rounded-3xl shadow">
+        <div className={`${abel.className} fixed z-50 top-2 flex bg-white border overflow-y-auto border-gray-300 rounded-3xl shadow`}>
             <select
                 className="appearance-none focus:outline-none p-3 pl-4 pr-10"
                 onClick={handleSelectClick}
