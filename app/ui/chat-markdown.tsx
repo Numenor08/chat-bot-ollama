@@ -1,12 +1,14 @@
 import { CopyIcon } from "@radix-ui/react-icons";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { dracula } from 'react-syntax-highlighter/dist/cjs/styles/prism'
-import ReactMarkdown from "react-markdown";
+import Markdown from "react-markdown";
+import remarkGfm from 'remark-gfm'
 
 const ChatMarkdown = ({ content, className }: { content: string, className: string }) => {
     return (
         <div className={className}>
-            <ReactMarkdown
+            <Markdown
+                remarkPlugins={[remarkGfm]}
                 components={{
                     pre({ children }) {
                         return (
@@ -49,7 +51,7 @@ const ChatMarkdown = ({ content, className }: { content: string, className: stri
                     }
                 }}>
                 {content}
-            </ReactMarkdown>
+            </Markdown>
         </div>
     );
 }

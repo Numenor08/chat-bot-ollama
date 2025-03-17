@@ -4,7 +4,8 @@ import React from 'react'
 import { TailSpin } from 'react-loader-spinner'
 import { GlobeIcon, CaretDownIcon } from '@radix-ui/react-icons'
 import { useState } from 'react'
-import ReactMarkdown from 'react-markdown'
+import Markdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 const ThoughtMessage = ({ thought, reasoningTime, isActive } : { thought: string, reasoningTime: number, isActive: boolean } ) => {
     const [isExpanded, setIsExpanded] = useState(true)
@@ -37,7 +38,8 @@ const ThoughtMessage = ({ thought, reasoningTime, isActive } : { thought: string
 
                     <div className='relative pl-9 mb-12'>
                         <div className='flex flex-col gap-3 text-xs/6 text-gray-400'>
-                            <ReactMarkdown
+                            <Markdown
+                            remarkPlugins={[remarkGfm]}
                             components={{
                                 code({ className, children, ...props }: { className?: string, children?: React.ReactNode }) {
                                     return (
@@ -49,7 +51,7 @@ const ThoughtMessage = ({ thought, reasoningTime, isActive } : { thought: string
                             }}
                             >
                             { thought }
-                            </ReactMarkdown>
+                            </Markdown>
                         </div>
                     </div>
                 </>

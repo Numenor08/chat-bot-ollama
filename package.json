@@ -17,7 +17,8 @@
     "react-dom": "^19.0.0",
     "react-loader-spinner": "^6.1.6",
     "react-markdown": "^10.0.0",
-    "react-syntax-highlighter": "^15.6.1"
+    "react-syntax-highlighter": "^15.6.1",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

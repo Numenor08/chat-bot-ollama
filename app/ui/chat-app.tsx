@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useContext, useRef } from "react";
+import { useState, useContext, useRef, useEffect } from "react";
 import MessageList from "@/app/ui/message";
 import InputPrompt from "@/app/ui/input-prompt";
 import { Messages } from "@/app/types/types";
@@ -168,6 +168,22 @@ const ChatApp = () => {
             stopReasoning();
         }
     };
+
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            if (abortController) {
+                e.preventDefault();
+                handleCancelRequest();
+                return '';
+            }
+        }
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     return (
         <div className={`flex flex-col items-center ${messages.length > 0 ? "justify-between" : "justify-center"} h-screen py-8 w-[90%] min-w-80 max-w-[50rem] gap-8`}>
