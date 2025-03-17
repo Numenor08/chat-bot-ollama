@@ -43,7 +43,7 @@ const ChooseModel = () => {
     }
 
     return (
-        <div className={`${abel.className} fixed z-50 top-2 flex bg-white border overflow-y-auto border-gray-300 rounded-3xl shadow`}>
+        <div className={`${abel.className} absolute z-20 top-2 flex bg-white border overflow-y-auto border-gray-300 rounded-3xl shadow`}>
             <select
                 className="appearance-none focus:outline-none p-3 pl-4 pr-10"
                 onClick={handleSelectClick}
@@ -59,7 +59,7 @@ const ChooseModel = () => {
                     ))
                 )}
             </select>
-            <TriangleDownIcon className={`w-5 h-5 absolute right-3 top-1/2 -translate-y-1/2 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+            <TriangleDownIcon className={`w-5 h-5 absolute right-3 top-1/2 -translate-y-1/2 transition-transform duration-75 ${isOpen ? 'rotate-180' : ''}`} />
         </div>
     );
 };

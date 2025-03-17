@@ -9,4 +9,6 @@ export const abel = Abel({
 export const inter = Inter({
     weight: "400",
     subsets: ["latin"],
+    style: "normal",
+    display: "swap",
 })
