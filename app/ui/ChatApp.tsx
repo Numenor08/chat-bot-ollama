@@ -55,48 +55,58 @@ const ChatApp = () => {
     const reasoningTimerRef = useRef<NodeJS.Timeout | null>(null);
     const { threadId } = useParams();
     const router = useRouter();
-    const shouldCancelRequestRef = useRef(false)
 
     const handleCreateThread = async (title: string) => {
         const id = await db.createThread(title);
         return id;
     }
 
-    const handleSendMessage = async (prompt: string, model: string, image: File | null) => {
+    const handleSendMessage = async (prompt: string, model: string, image: File| string | null) => {
         if (!prompt.trim()) return;
 
         // Convert image to Base64
         let imageBase64: string | null = null;
         if (image) {
-            const compressedImage = await compressImage(image);
-            imageBase64 = await convertImageToBase64(compressedImage);
+            if (image instanceof File) {
+                const compressedImage = await compressImage(image);
+                imageBase64 = await convertImageToBase64(compressedImage);
+            } else {
+                imageBase64 = image;
+            }
         }
 
         let currentThreadId: string | string[] | undefined = threadId;
         const newTitle: string = prompt.trim().length > 20 ? prompt.trim().slice(0, 20) + "..." : prompt.trim();
 
         if (!currentThreadId) {
+            localStorage.setItem("pendingPrompt", prompt);
+            localStorage.setItem("pendingModel", model);
+            if (imageBase64) {
+                localStorage.setItem("pendingImage", imageBase64);
+            }
+
             currentThreadId = await handleCreateThread(newTitle);
             router.push(`/c/${currentThreadId}`);
+        } else {
+            await db.createMessage({
+                thread_id: currentThreadId as string,
+                role: 'user',
+                content: prompt,
+                image: imageBase64 ? [imageBase64] : null,
+                reasoning_time: null
+            })
+            const InputMessages: Messages = { role: 'user', content: prompt, images: imageBase64 ? [imageBase64] : null };
+    
+            const newMessages: Messages[] = [
+                ...messages,
+                InputMessages,
+                { role: "assistant", content: "", reasoningTime: 0 }, // Placeholder bot dengan reasoningTime
+            ];
+    
+            setMessages(newMessages);
+            sendMessageToBackend(newMessages, model, currentThreadId);
         }
 
-        await db.createMessage({
-            thread_id: currentThreadId as string,
-            role: 'user',
-            content: prompt,
-            image: imageBase64 ? [imageBase64] : null,
-            reasoning_time: null
-        })
-        const InputMessages: Messages = { role: 'user', content: prompt, images: imageBase64 ? [imageBase64] : null };
-
-        const newMessages: Messages[] = [
-            ...messages,
-            InputMessages,
-            { role: "assistant", content: "", reasoningTime: 0 }, // Placeholder bot dengan reasoningTime
-        ];
-
-        setMessages(newMessages);
-        sendMessageToBackend(newMessages, model, currentThreadId);
     };
 
     const startReasoning = () => {
@@ -117,7 +127,6 @@ const ChatApp = () => {
 
     const sendMessageToBackend = async (updatedMessages: Messages[], model: string, currentThreadId: string | string[]) => {
         try {
-            shouldCancelRequestRef.current = true;
             setLoading(true);
             const controller = new AbortController();
             setAbortController(controller);
@@ -183,7 +192,7 @@ const ChatApp = () => {
             if (error instanceof Error) {
                 if (error.name === "AbortError") {
                     console.warn("Request was aborted");
-                    shouldCancelRequestRef.current = false;
+
                     // Save the last remainder message (Assistant) to the database
                     const reasoningTime = stopReasoning();
                     setMessages((prev: Messages[]) => {
@@ -210,7 +219,6 @@ const ChatApp = () => {
                 console.error("Unknown error:", error);
             }
         } finally {
-            shouldCancelRequestRef.current = false;
             setLoading(false);
             setAbortController(null);
         }
@@ -230,7 +238,7 @@ const ChatApp = () => {
             setMessages([]);
         }
         return () => {
-            if (abortController && shouldCancelRequestRef.current) {
+            if (abortController) {
                 handleCancelRequest();
             }
         };
@@ -249,6 +257,28 @@ const ChatApp = () => {
         if (threadId) {
             fetchMessages();
         }
+    }, [threadId]);
+
+    useEffect(() => {
+        const makeFirstRequest = async () => {
+            if (threadId && messages.length === 0) {
+                // Ambil data dari localStorage
+                const prompt = localStorage.getItem("pendingPrompt");
+                const model = localStorage.getItem("pendingModel");
+                const imageBase64 = localStorage.getItem("pendingImage") || null;
+
+                // Hapus data dari localStorage
+                localStorage.removeItem("pendingPrompt");
+                localStorage.removeItem("pendingModel");
+                localStorage.removeItem("pendingImage");
+
+                if (prompt && model) {
+                    handleSendMessage(prompt, model, imageBase64);
+                }
+            }
+        };
+
+        makeFirstRequest();
     }, [threadId]);
 
     useEffect(() => {
