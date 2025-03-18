@@ -1,11 +1,11 @@
 "use client";
 import { useEffect, useRef, useState, useContext } from "react";
 import { Messages } from "@/app/types/types";
-import ThoughtMessage from "@/app/ui/thought-message";
+import ThoughtMessage from "@/app/ui/Message/ThoughtMessage";
 import { ThreeDots } from "react-loader-spinner";
 import ModelContext from "@/app/store/ContextProvider";
 import Image from 'next/image'
-import ChatMarkdown from "@/app/ui/chat-markdown";
+import ChatMarkdown from "@/app/ui/Message/ChartMarkdown";
 
 const MessageList = ({ messages }: { messages: Messages[] }) => {
     const messagesEndRef = useRef<HTMLDivElement | null>(null);

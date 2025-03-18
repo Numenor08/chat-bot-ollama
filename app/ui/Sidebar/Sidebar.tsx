@@ -4,7 +4,7 @@ import SideChat from "@/app/ui/Sidebar/SideChat";
 import { EnterIcon } from "@radix-ui/react-icons";
 import { db, Thread } from "@/app/lib/dexie";
 import { useLiveQuery } from "dexie-react-hooks";
-import NewChatButton from "../NewChatButton";
+import NewChatButton from "@/app/ui/Sidebar/NewChatButton";
 
 interface SidebarProps {
   isSideOpen: boolean;

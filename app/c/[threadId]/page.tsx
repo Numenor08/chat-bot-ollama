@@ -1,7 +1,7 @@
 "use client";
 
-import ChatApp from "@/app/ui/chat-app";
-import ChooseModel from "@/app/ui/choose-model";
+import ChatApp from "@/app/ui/ChatApp";
+import ChooseModel from "@/app/ui/ChooseModel";
 import { useState } from "react";
 import ModelContext from "@/app/store/ContextProvider";
 

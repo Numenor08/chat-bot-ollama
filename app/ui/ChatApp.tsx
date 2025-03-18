@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useContext, useRef, useEffect, startTransition } from "react";
-import MessageList from "@/app/ui/message";
-import InputPrompt from "@/app/ui/input-prompt";
+import MessageList from "@/app/ui/Message/Message";
+import InputPrompt from "@/app/ui/InputPrompt";
 import { Messages } from "@/app/types/types";
 import ModelContext from "@/app/store/ContextProvider";
 import { db } from "@/app/lib/dexie";
