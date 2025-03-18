@@ -48,7 +48,55 @@ class ChatBotDB extends Dexie {
     }
 
     async getAllThreads() {
-        return this.threads.reverse().sortBy('updated_at');
+        const threads = await this.threads.reverse().sortBy('updated_at');
+        const groupedThreads: Record<string, Thread[]> = {
+            Today: [],
+            Yesterday: [],
+            'Previous 7 Days': [],
+            'Previous 30 Days': [],
+        };
+
+        const today = new Date();
+        const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        const startOfYesterday = new Date(startOfToday);
+        startOfYesterday.setDate(startOfYesterday.getDate() - 1);
+        const startOf7DaysAgo = new Date(startOfToday);
+        startOf7DaysAgo.setDate(startOf7DaysAgo.getDate() - 7);
+        const startOf30DaysAgo = new Date(startOfToday);
+        startOf30DaysAgo.setDate(startOf30DaysAgo.getDate() - 30);
+
+        for (const thread of threads) {
+            const updatedAt = new Date(thread.updated_at);
+
+            if (updatedAt >= startOfToday) {
+                groupedThreads.Today.push(thread);
+            } else if (updatedAt >= startOfYesterday) {
+                groupedThreads.Yesterday.push(thread);
+            } else if (updatedAt >= startOf7DaysAgo) {
+                groupedThreads['Previous 7 Days'].push(thread);
+            } else if (updatedAt >= startOf30DaysAgo) {
+                groupedThreads['Previous 30 Days'].push(thread);
+            } else {
+                const year = updatedAt.getFullYear().toString();
+                if (!groupedThreads[year]) {
+                    groupedThreads[year] = [];
+                }
+                groupedThreads[year].push(thread);
+            }
+        }
+
+        return groupedThreads;
+    }
+
+    async deleteThread(threadId: string) {
+        await this.transaction('rw', this.threads, this.messages, async () => {
+            await this.threads.delete(threadId);
+            await this.messages.where('thread_id').equals(threadId).delete();
+        });
+    }
+
+    async updateThread(threadId: string, title: string) {
+        await this.threads.update(threadId, { title, updated_at: new Date() });
     }
 
     async createMessage(message: Pick<Message, 'thread_id' | 'role' | 'content' | 'image' | 'reasoning_time'>) {

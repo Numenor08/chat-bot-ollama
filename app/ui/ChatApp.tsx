@@ -287,9 +287,13 @@ const ChatApp = () => {
 
     return (
         <div className={`flex flex-col items-center ${messages.length > 0 ? "justify-between" : "justify-center"} h-screen py-8 w-full min-w-80 max-w-[50rem] gap-8`}>
-            <h1 className={`text-4xl text-center ${messages.length > 0 ? "hidden" : ""}`}>
-                Write the prompt you want below <span className="text-3xl">👇</span>
-            </h1>
+            <div className={`${messages.length > 0 ? "hidden" : ""} text-center`}>
+                <h1 className={`text-4xl mb-8`}>
+                    Write the prompt you want below
+                </h1>
+                <h1 className="text-3xl animate-bounce">👇</h1>
+            </div>
+            
             <MessageList messages={messages} />
             <InputPrompt onSendMessage={handleSendMessage} handleCancelRequest={handleCancelRequest} />
         </div>

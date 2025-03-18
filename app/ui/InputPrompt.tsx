@@ -112,6 +112,7 @@ const InputPrompt = ({ onSendMessage, handleCancelRequest }: { onSendMessage: (m
         ref={textareaRef}
         className="w-full h-auto overflow-y-auto leading-5 resize-none focus:outline-none textarea-custom"
         name="text"
+        spellCheck="false"
         placeholder="Your Prompt Here"
         autoFocus
         rows={1}

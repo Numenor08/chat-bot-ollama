@@ -1,6 +1,6 @@
 "use client";
 
-import SideChat from "@/app/ui/Sidebar/SideChat";
+import SideThread from "@/app/ui/Sidebar/SideThread";
 import { EnterIcon } from "@radix-ui/react-icons";
 import { db, Thread } from "@/app/lib/dexie";
 import { useLiveQuery } from "dexie-react-hooks";
@@ -12,8 +12,8 @@ interface SidebarProps {
 }
 
 function Sidebar({ isSideOpen, setIsSideOpen }: SidebarProps) {
-  
-  const threads: Thread[] = useLiveQuery(() => db.getAllThreads(), []) || []
+
+  const threads: Record<string, Thread[]> = useLiveQuery(() => db.getAllThreads(), []) || {}
 
   return (
     <>
@@ -25,9 +25,9 @@ function Sidebar({ isSideOpen, setIsSideOpen }: SidebarProps) {
       {/*  */}
 
       <div
-        className={`fixed w-72 overflow-clip top-0 left-0 h-full bg-white border-r z-50 transition-all transform-gpu duration-300 ease-in-out ${isSideOpen
-            ? "max-md:translate-x-0 md:w-72"
-            : "max-md:-translate-x-full md:w-0"
+        className={`fixed w-72 overflow-clip top-0 left-0 h-full bg-zinc-50 border-r z-50 transition-all transform-gpu duration-300 ease-in-out ${isSideOpen
+          ? "max-md:translate-x-0 md:w-80"
+          : "max-md:-translate-x-full md:w-0"
           } md:relative`}
       >
         <div className="p-4">
@@ -40,12 +40,26 @@ function Sidebar({ isSideOpen, setIsSideOpen }: SidebarProps) {
               className={`h-6 w-6 cursor-pointer text-gray-500 hover:text-black transition-colors duration-300 rotate-180`}
             />
           </div>
-          
+
           <NewChatButton />
 
-          <div className="my-4">
-            {threads && threads.map((thread) => (
-              <SideChat threadId={thread.id} key={thread.id}>{thread.title}</SideChat>
+          <div className="my-4 flex flex-col space-y-4">
+            {threads && Object.entries(threads).map(([group, groupThreads]) => (
+              <div key={group}>
+                {groupThreads.length !== 0 && (
+                  <h3 className="text-black text-left text-xs font-sans font-semibold mb-2 ml-2">{group}</h3>)
+                }
+
+                {groupThreads.map((thread: any) => (
+                  <SideThread
+                    isSideOpen={isSideOpen}
+                    threadId={thread.id}
+                    key={thread.id}
+                    value={thread.title}
+                  >
+                  </SideThread>
+                ))}
+              </div>
             ))}
           </div>
         </div>
