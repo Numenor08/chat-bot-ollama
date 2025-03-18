@@ -51,8 +51,9 @@ const InputPrompt = ({ onSendMessage, handleCancelRequest }: { onSendMessage: (m
   const adjustHeight = () => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto"; // Ukuran default
-      if (textareaRef.current.scrollHeight > 164) {
-        textareaRef.current.style.height = `${164}px`;
+      const maxScrollHeight = 164;
+      if (textareaRef.current.scrollHeight > maxScrollHeight) {
+        textareaRef.current.style.height = `${maxScrollHeight}px`;
         return;
       }
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
@@ -69,7 +70,7 @@ const InputPrompt = ({ onSendMessage, handleCancelRequest }: { onSendMessage: (m
     <form
       ref={formRef}
       onSubmit={handleSubmit}
-      className={`text-sm relative w-full border rounded-3xl py-3 pl-12 pr-14 shadow-[0_4px_5px_-2px_rgb(0,0,0,0.1)] focus:shadow-[0_4px_5px_-1px_rgb(0,0,0,0.1)]`}
+      className={`relative bg-white text-sm w-full border rounded-3xl py-3 pl-12 pr-14 shadow-[0_4px_5px_-2px_rgb(0,0,0,0.1)] focus:shadow-[0_4px_5px_-1px_rgb(0,0,0,0.1)]`}
     >
       {image && (
         <div className="relative w-min min-w-24 min-h-16 mb-4">
@@ -87,8 +88,8 @@ const InputPrompt = ({ onSendMessage, handleCancelRequest }: { onSendMessage: (m
       <input type="text" name="role" value={role} readOnly className="hidden" />
       <label
         htmlFor="image"
-        className={`absolute bottom-2.5 left-3 cursor-pointer p-2 w-8 h-8 rounded-full flex items-center justify-center 
-    ${isImageSupported(model) ? "hover:bg-gray-200" : "opacity-50 cursor-not-allowed"}`}
+        className={`absolute bottom-2.5 left-3 p-2 w-8 h-8 rounded-full flex items-center justify-center 
+    ${isImageSupported(model) ? "hover:bg-gray-200 cursor-pointer" : "opacity-50 cursor-not-allowed"}`}
       >
         <div className="relative w-5 h-5 flex items-center justify-center">
           <ImageIcon className="w-5 h-5 text-neutral-700" />

@@ -45,13 +45,13 @@ const MessageList = ({ messages }: { messages: Messages[] }) => {
                         isActive={index === messages.length - 1 && isThinking}
                     />
                     {remainingContent && (
-                        <ChatMarkdown className="prose text-sm/6 w-full" content={remainingContent} />
+                        <ChatMarkdown className="prose max-w-max text-sm/6 w-full" content={remainingContent} />
                     )}
                 </>
             );
         }
         return (
-            <ChatMarkdown className="prose text-sm/6 w-full" content={content.trim()} />
+            <ChatMarkdown className="prose max-w-max text-sm/6 w-full" content={content.trim()} />
         );
     };
 
@@ -63,7 +63,7 @@ const MessageList = ({ messages }: { messages: Messages[] }) => {
             {messages.map((msg, index) => (
                 <div key={index} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} mb-2`}>
                     <div className={`flex flex-col ${msg.role === "user" ? "items-end" : "items-start"} w-full`}>
-                        <div className={`break-words px-4 py-2 my-8 rounded-lg text-black ${msg.role === "user" ? "bg-gray-100 max-w-[75%]" : "bg-none max-w-[90%]"} animate-fade-in`}>
+                        <div className={`break-words px-4 py-2 my-8 rounded-lg text-black ${msg.role === "user" ? "bg-gray-100 max-w-[75%]" : "bg-none w-full"} animate-fade-in`}>
                             {msg.content ? (
                                 renderContent(msg.content, msg?.reasoningTime, index)
                             ) : (
