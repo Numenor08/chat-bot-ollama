@@ -229,17 +229,7 @@ const ChatApp = () => {
         if (!threadId) {
             setMessages([]);
         }
-        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-            if (abortController) {
-                e.preventDefault();
-                handleCancelRequest();
-                return '';
-            }
-        }
-
-        window.addEventListener("beforeunload", handleBeforeUnload);
         return () => {
-            window.removeEventListener("beforeunload", handleBeforeUnload);
             if (abortController && shouldCancelRequestRef.current) {
                 handleCancelRequest();
             }
