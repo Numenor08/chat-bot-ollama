@@ -55,6 +55,7 @@ const ChatApp = () => {
     const reasoningTimerRef = useRef<NodeJS.Timeout | null>(null);
     const { threadId } = useParams();
     const router = useRouter();
+    const shouldCancelRequestRef = useRef(false)
 
     const handleCreateThread = async (title: string) => {
         const id = await db.createThread(title);
@@ -116,6 +117,7 @@ const ChatApp = () => {
 
     const sendMessageToBackend = async (updatedMessages: Messages[], model: string, currentThreadId: string | string[]) => {
         try {
+            shouldCancelRequestRef.current = true;
             setLoading(true);
             const controller = new AbortController();
             setAbortController(controller);
@@ -181,7 +183,7 @@ const ChatApp = () => {
             if (error instanceof Error) {
                 if (error.name === "AbortError") {
                     console.warn("Request was aborted");
-
+                    shouldCancelRequestRef.current = false;
                     // Save the last remainder message (Assistant) to the database
                     const reasoningTime = stopReasoning();
                     setMessages((prev: Messages[]) => {
@@ -208,6 +210,7 @@ const ChatApp = () => {
                 console.error("Unknown error:", error);
             }
         } finally {
+            shouldCancelRequestRef.current = false;
             setLoading(false);
             setAbortController(null);
         }
@@ -237,7 +240,7 @@ const ChatApp = () => {
         window.addEventListener("beforeunload", handleBeforeUnload);
         return () => {
             window.removeEventListener("beforeunload", handleBeforeUnload);
-            if (abortController) {
+            if (abortController && shouldCancelRequestRef.current) {
                 handleCancelRequest();
             }
         };
