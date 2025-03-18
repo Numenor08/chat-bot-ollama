@@ -2,7 +2,7 @@
 
 import { useState, useRef, useContext } from "react";
 import { PaperPlaneIcon, ImageIcon, CrossCircledIcon } from "@radix-ui/react-icons";
-import ModelContext from "@/app/store/ContextProvider";
+import {useModelContext} from "@/app/store/ContextProvider";
 import Image from 'next/image'
 
 const imageModels = ["llava", "llava-llama3", "llama3.2-vision", "minicpm-v", "moondream", "bakllava", "llava-phi3"];
@@ -13,7 +13,7 @@ const InputPrompt = ({ onSendMessage, handleCancelRequest }: { onSendMessage: (m
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const role = "user";
-  const { model, loading } = useContext(ModelContext)
+  const { model, loading } = useModelContext()
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

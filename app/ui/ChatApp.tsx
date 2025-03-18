@@ -4,7 +4,7 @@ import { useState, useContext, useRef, useEffect, startTransition } from "react"
 import MessageList from "@/app/ui/Message/Message";
 import InputPrompt from "@/app/ui/InputPrompt";
 import { Messages } from "@/app/types/types";
-import ModelContext from "@/app/store/ContextProvider";
+import { useModelContext } from "@/app/store/ContextProvider";
 import { db } from "@/app/lib/dexie";
 import { useParams, useRouter } from "next/navigation";
 
@@ -49,23 +49,21 @@ const compressImage = async (imageFile: File, maxWidth = 1024): Promise<File> =>
 
 
 const ChatApp = () => {
-    const [messages, setMessages] = useState<Messages[]>([]);
     const lastUpdatedMessageRef = useRef<Messages[]>([]);
-    const { setLoading, setIsThinking } = useContext(ModelContext);
-    const [abortController, setAbortController] = useState<AbortController | null>(null);
+    const { setLoading, setIsThinking, messages, setMessages, abortController, setAbortController } = useModelContext();
     const reasoningTimeRef = useRef<number>(0);
     const reasoningTimerRef = useRef<NodeJS.Timeout | null>(null);
     const { threadId } = useParams();
     const router = useRouter();
-    
-    const handleCreateThread = async () => {
-        const id = await db.createThread("New Chat2");
+
+    const handleCreateThread = async (title: string) => {
+        const id = await db.createThread(title);
         return id;
     }
-    
+
     const handleSendMessage = async (prompt: string, model: string, image: File | null) => {
         if (!prompt.trim()) return;
-        
+
         // Convert image to Base64
         let imageBase64: string | null = null;
         if (image) {
@@ -74,26 +72,28 @@ const ChatApp = () => {
         }
 
         let currentThreadId: string | string[] | undefined = threadId;
-        
+        const newTitle: string = prompt.trim().length > 20 ? prompt.trim().slice(0, 20) + "..." : prompt.trim();
+
         if (!currentThreadId) {
-            currentThreadId = await handleCreateThread();
+            currentThreadId = await handleCreateThread(newTitle);
+            router.push(`/c/${currentThreadId}`);
         }
-        
+
         await db.createMessage({
             thread_id: currentThreadId as string,
             role: 'user',
             content: prompt,
             image: imageBase64 ? [imageBase64] : null,
-            reasoning_time: null         
+            reasoning_time: null
         })
-        const InputMessages: Messages = {role: 'user', content: prompt, images: imageBase64 ? [imageBase64] : null};
-        
+        const InputMessages: Messages = { role: 'user', content: prompt, images: imageBase64 ? [imageBase64] : null };
+
         const newMessages: Messages[] = [
             ...messages,
             InputMessages,
             { role: "assistant", content: "", reasoningTime: 0 }, // Placeholder bot dengan reasoningTime
         ];
-        
+
         setMessages(newMessages);
         sendMessageToBackend(newMessages, model, currentThreadId);
     };
@@ -119,57 +119,55 @@ const ChatApp = () => {
             setLoading(true);
             const controller = new AbortController();
             setAbortController(controller);
-            
+
             const res = await fetch("/api/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ messages: updatedMessages, model }),
                 signal: controller.signal,
             });
-            
+
             if (!res.body) throw new Error("Something went wrong");
-            
+
             const reader = res.body.getReader();
             const decoder = new TextDecoder();
             let botReply = "";
             let reasoningTime = 0;
             const assistantIndex = updatedMessages.length - 1;
-            
+
             while (true) {
                 const { done, value } = await reader.read();
                 if (done) break;
-                
+
                 const textChunk = decoder.decode(value, { stream: true });
                 const lines = textChunk.trim().split("\n");
-                
+
                 for (const line of lines) {
                     if (!line) continue;
-                    
+
                     try {
                         const { content } = JSON.parse(line);
                         botReply += content;
-                        
+
                         if (content && content.includes("<think>")) {
                             startReasoning();
                         }
-                        
+
                         if (content && content.includes("</think>")) {
                             reasoningTime = stopReasoning();
                         }
-                        
-                        setMessages((prev) => {
-                            return prev.map((msg, index) =>
-                                index === assistantIndex
-                            ? { ...msg, content: botReply, reasoningTime }
-                            : msg
-                        );
-                    });
-                } catch (error) {
+
+                        setMessages((prev: Messages[]) => {
+                            const updatedMessages = [...prev];
+                            updatedMessages[assistantIndex] = { ...updatedMessages[assistantIndex], content: botReply, reasoningTime };
+                            return updatedMessages;
+                        });
+                    } catch (error) {
                         console.error("Error parsing JSON:", error);
                     }
                 }
             }
-            
+
             // Save the last message (Assistant) to the database
             await db.createMessage({
                 thread_id: currentThreadId as string,
@@ -178,23 +176,23 @@ const ChatApp = () => {
                 image: null,
                 reasoning_time: reasoningTime
             })
-            
+
         } catch (error) {
             if (error instanceof Error) {
                 if (error.name === "AbortError") {
                     console.warn("Request was aborted");
-                    
+
                     // Save the last remainder message (Assistant) to the database
                     const reasoningTime = stopReasoning();
-                    setMessages((prev) => {
+                    setMessages((prev: Messages[]) => {
                         return prev.map((msg, index) =>
                             index === prev.length - 1
-                        ? { ...msg, reasoningTime }
-                        : msg
+                                ? { ...msg, reasoningTime }
+                                : msg
                         );
                     })
-                    
-                    const remainderMessage = lastUpdatedMessageRef.current[lastUpdatedMessageRef.current.length - 1]; 
+
+                    const remainderMessage = lastUpdatedMessageRef.current[lastUpdatedMessageRef.current.length - 1];
                     if (!remainderMessage) return;
                     await db.createMessage({
                         thread_id: currentThreadId as string,
@@ -203,9 +201,6 @@ const ChatApp = () => {
                         image: null,
                         reasoning_time: reasoningTime
                     })
-                    if (!threadId) {
-                        window.history.replaceState(null, "", `/c/${currentThreadId}`);
-                    }
                     return;
                 }
                 console.error("Error fetching response:", error);
@@ -215,12 +210,9 @@ const ChatApp = () => {
         } finally {
             setLoading(false);
             setAbortController(null);
-            if (!threadId) {
-                window.history.replaceState(null, "", `/c/${currentThreadId}`);
-            }
         }
     };
-    
+
     const handleCancelRequest = () => {
         if (abortController) {
             abortController.abort();
@@ -231,7 +223,9 @@ const ChatApp = () => {
     };
 
     useEffect(() => {
-
+        if (!threadId) {
+            setMessages([]);
+        }
         const handleBeforeUnload = (e: BeforeUnloadEvent) => {
             if (abortController) {
                 e.preventDefault();
@@ -243,15 +237,22 @@ const ChatApp = () => {
         window.addEventListener("beforeunload", handleBeforeUnload);
         return () => {
             window.removeEventListener("beforeunload", handleBeforeUnload);
+            if (abortController) {
+                handleCancelRequest();
+            }
         };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
         const fetchMessages = async () => {
-            const messages = await db.getMessagesByThreadId(threadId as string);
-            setMessages(messages.map(msg => ({ ...msg, reasoningTime: msg.reasoning_time ?? undefined })));
-        }
+            try {
+                const fetchedMessages = await db.getMessagesByThreadId(threadId as string);
+                setMessages(fetchedMessages.map(msg => ({ ...msg, reasoningTime: msg.reasoning_time ?? undefined })) as Messages[]);
+            } catch (error) {
+                console.error("Error fetching messages:", error);
+            }
+        };
         if (threadId) {
             fetchMessages();
         }

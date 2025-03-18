@@ -2,7 +2,7 @@
 import { useEffect, useState, useContext } from "react";
 import { TriangleDownIcon } from "@radix-ui/react-icons";
 import { abel } from "@/app/fonts";
-import ModelContext from "@/app/store/ContextProvider";
+import { useModelContext } from "@/app/store/ContextProvider";
 
 interface models {
     name: string;
@@ -16,7 +16,7 @@ interface models {
 const ChooseModel = () => {
     const [listModels, setListModels] = useState<models[] | null>(null);
     const [isOpen, setIsOpen] = useState(false);
-    const { model, setModel } = useContext(ModelContext);
+    const { model, setModel } = useModelContext();
 
     useEffect(() => {
         const fetchModels = async () => {
@@ -25,7 +25,9 @@ const ChooseModel = () => {
                 if (!res.ok) throw new Error("Failed to fetch");
                 const data = await res.json();
                 setListModels(data.models);
-                setModel(data.models[0].name);
+                if (model === "") {
+                    setModel(data.models[0].name);
+                }
             } catch (error) {
                 console.error("Fetch error:", error);
             }
