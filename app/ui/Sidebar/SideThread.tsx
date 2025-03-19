@@ -41,7 +41,9 @@ function SideThread({ isSideOpen, threadId, value }: SideThreadProps) {
     const handleDelete = async () => {
         try {
             await db.deleteThread(threadId);
-            route.replace('/');
+            if (params.threadId === threadId){
+                route.replace('/');
+            }
         } catch (error) {
             console.error(error);
         }
