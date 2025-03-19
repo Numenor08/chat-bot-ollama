@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import ollama from "ollama";
 
 export async function POST(req: NextRequest) {
@@ -19,12 +19,23 @@ export async function POST(req: NextRequest) {
             stream: true,
         });
 
+        let startReasoning: number | null = null;
+        let reasoningTime: number = 0;
+
         const encoder = new TextEncoder();
         const readableStream = new ReadableStream({
             async start(controller) {
                 try {
                     for await (const part of stream) {
-                        const chunk = JSON.stringify({ content: part.message.content }) + "\n";
+                        if (part && part.message.content.includes("<think>")) {
+                            startReasoning = Date.now();
+                        }
+                        if (part && part.message.content.includes("</think>") && startReasoning !== null) {
+                            const endReasoning = Date.now();
+                            reasoningTime = Math.floor((endReasoning - startReasoning) / 1000);
+                            startReasoning = null;
+                        }
+                        const chunk = JSON.stringify({ content: part.message.content, reasoningTime }) + "\n";
                         controller.enqueue(encoder.encode(chunk)); // Kirim JSON per baris
                     }
                     controller.close();
@@ -34,12 +45,13 @@ export async function POST(req: NextRequest) {
             },
         });
 
-        return new Response(readableStream, {
-            headers: { "Content-Type": "application/json" }, // Gunakan JSON agar lebih fleksibel
+        return new NextResponse(readableStream, {
+            headers: { "Content-Type": "application/json" },
         });
 
     } catch (error) {
-        return new Response(JSON.stringify({ error: "Terjadi kesalahan: " + error }), {
+        console.error(error);
+        return new NextResponse(JSON.stringify({ error: "Terjadi kesalahan: " + error }), {
             status: 500,
             headers: { "Content-Type": "application/json" },
         });

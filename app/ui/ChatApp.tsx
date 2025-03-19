@@ -50,9 +50,8 @@ const compressImage = async (imageFile: File, maxWidth = 1024): Promise<File> =>
 
 const ChatApp = () => {
     const lastUpdatedMessageRef = useRef<Messages[]>([]);
+    const lastReasoningTimeRef = useRef<number | null>(null);
     const { setLoading, setIsThinking, messages, setMessages, abortController, setAbortController } = useModelContext();
-    const reasoningTimeRef = useRef<number>(0);
-    const reasoningTimerRef = useRef<NodeJS.Timeout | null>(null);
     const { threadId } = useParams();
     const router = useRouter();
 
@@ -76,7 +75,9 @@ const ChatApp = () => {
         }
 
         let currentThreadId: string | string[] | undefined = threadId;
-        const newTitle: string = prompt.trim().length > 20 ? prompt.trim().slice(0, 20) + "..." : prompt.trim();
+        const newTitle: string = prompt.trim().length > 20 
+            ? prompt.trim().slice(0, 1).toUpperCase() + prompt.trim().slice(1, 20) + "..." 
+            : prompt.trim().charAt(0).toUpperCase() + prompt.trim().slice(1);
 
         if (!currentThreadId) {
             localStorage.setItem("pendingPrompt", prompt);
@@ -107,22 +108,6 @@ const ChatApp = () => {
             sendMessageToBackend(newMessages, model, currentThreadId);
         }
 
-    };
-
-    const startReasoning = () => {
-        setIsThinking(true);
-        reasoningTimeRef.current = 0;
-        reasoningTimerRef.current = setInterval(() => {
-            reasoningTimeRef.current += 1;
-        }, 1000);
-    };
-
-    const stopReasoning = (): number => {
-        setIsThinking(false);
-        if (reasoningTimerRef.current) {
-            clearInterval(reasoningTimerRef.current);
-        }
-        return reasoningTimeRef.current;
     };
 
     const sendMessageToBackend = async (updatedMessages: Messages[], model: string, currentThreadId: string | string[]) => {
@@ -157,21 +142,24 @@ const ChatApp = () => {
                     if (!line) continue;
 
                     try {
-                        const { content } = JSON.parse(line);
+                        const { content, reasoningTime } = JSON.parse(line);
                         botReply += content;
 
                         if (content && content.includes("<think>")) {
-                            startReasoning();
+                            setIsThinking(true);
                         }
 
                         if (content && content.includes("</think>")) {
-                            reasoningTime = stopReasoning();
+                            setIsThinking(false);
                         }
 
                         setMessages((prev: Messages[]) => {
-                            const updatedMessages = [...prev];
-                            updatedMessages[assistantIndex] = { ...updatedMessages[assistantIndex], content: botReply, reasoningTime };
-                            return updatedMessages;
+                            return prev.map((msg, index) => {
+                                if (index === assistantIndex) {
+                                    return { ...msg, content: botReply, reasoningTime };
+                                }
+                                return msg;
+                            })
                         });
                     } catch (error) {
                         console.error("Error parsing JSON:", error);
@@ -192,26 +180,27 @@ const ChatApp = () => {
             if (error instanceof Error) {
                 if (error.name === "AbortError") {
                     console.warn("Request was aborted");
-
-                    // Save the last remainder message (Assistant) to the database
-                    const reasoningTime = stopReasoning();
+                
+                    // Simpan pesan terakhir dengan reasoning time terakhir
                     setMessages((prev: Messages[]) => {
                         return prev.map((msg, index) =>
                             index === prev.length - 1
-                                ? { ...msg, reasoningTime }
+                                ? { ...msg, reasoningTime: lastReasoningTimeRef.current ?? msg.reasoningTime }
                                 : msg
                         );
-                    })
-
+                    });
+                
                     const remainderMessage = lastUpdatedMessageRef.current[lastUpdatedMessageRef.current.length - 1];
                     if (!remainderMessage) return;
+                
                     await db.createMessage({
                         thread_id: currentThreadId as string,
                         role: 'assistant',
                         content: remainderMessage?.content,
                         image: null,
-                        reasoning_time: reasoningTime
-                    })
+                        reasoning_time: lastReasoningTimeRef.current ?? remainderMessage?.reasoningTime,
+                    });
+                
                     return;
                 }
                 console.error("Error fetching response:", error);
@@ -229,7 +218,21 @@ const ChatApp = () => {
             abortController.abort();
             setAbortController(null);
             setLoading(false);
-            stopReasoning();
+
+            setMessages((prev: Messages[]) => {
+                return prev.map((msg, index) => {
+                    if (index === prev.length - 1) {
+                        if (msg.reasoningTime) {
+                            lastReasoningTimeRef.current = msg.reasoningTime;
+                        }
+                        return msg
+                    } else {
+                        return msg
+                    }
+
+                }
+                );
+            })
         }
     };
 
@@ -262,12 +265,11 @@ const ChatApp = () => {
     useEffect(() => {
         const makeFirstRequest = async () => {
             if (threadId && messages.length === 0) {
-                // Ambil data dari localStorage
+
                 const prompt = localStorage.getItem("pendingPrompt");
                 const model = localStorage.getItem("pendingModel");
                 const imageBase64 = localStorage.getItem("pendingImage") || null;
 
-                // Hapus data dari localStorage
                 localStorage.removeItem("pendingPrompt");
                 localStorage.removeItem("pendingModel");
                 localStorage.removeItem("pendingImage");
