@@ -96,7 +96,7 @@ const ChatApp = () => {
                 image: imageBase64 ? [imageBase64] : null,
                 reasoning_time: null
             })
-            const InputMessages: Messages = { role: 'user', content: prompt, images: imageBase64 ? [imageBase64] : null };
+            const InputMessages: Messages = { role: 'user', content: prompt, image: imageBase64 ? [imageBase64] : null };
     
             const newMessages: Messages[] = [
                 ...messages,
@@ -286,6 +286,8 @@ const ChatApp = () => {
     useEffect(() => {
         lastUpdatedMessageRef.current = messages;
     }, [messages]);
+
+    console.log(messages)
 
     return (
         <div className={`flex flex-col items-center ${messages.length > 0 ? "justify-between" : "justify-center"} h-screen py-8 w-full min-w-80 max-w-[50rem] gap-8`}>

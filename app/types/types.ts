@@ -2,5 +2,5 @@ export interface Messages {
     role: "user" | "assistant";
     content: string;
     reasoningTime?: number;
-    images?: Uint8Array[] | string[] | null;
+    image?: Uint8Array[] | string[] | null;
 }

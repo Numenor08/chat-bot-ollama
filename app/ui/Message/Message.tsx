@@ -47,9 +47,9 @@ const MessageItem = memo(({ msg, index, isThinking, messages }: { msg: Messages;
                         <ThreeDots color="#141414" height={15} width={15} />
                     )}
                 </div>
-                {msg.images && msg.images.length > 0 && (
+                {msg.image && msg.image.length > 0 && (
                     <Image
-                        src={`data:image/png;base64,${msg.images[0]}`}
+                        src={`data:image/png;base64,${msg.image[0]}`}
                         width={240}
                         height={200}
                         alt={`Image ${index}`}
