@@ -11,10 +11,10 @@ interface ModelContextProps {
     setLoading: (loading: boolean) => void;
     isThinking: boolean;
     setIsThinking: (thinking: boolean) => void;
-    messages: Messages[];
-    setMessages: React.Dispatch<React.SetStateAction<Messages[]>>;
     abortController: AbortController | null;
     setAbortController: React.Dispatch<React.SetStateAction<AbortController | null>>;
+    isSideOpen: boolean;
+    setIsSideOpen: (value: boolean) => void;
 }
 
 export const ModelContext = createContext<ModelContextProps>({
@@ -24,22 +24,22 @@ export const ModelContext = createContext<ModelContextProps>({
     setLoading: () => { },
     isThinking: false,
     setIsThinking: () => { },
-    messages: [],
-    setMessages: () => { },
     abortController: new AbortController(),
     setAbortController: () => { },
+    isSideOpen: false,
+    setIsSideOpen: () => { },
 });
 
 export const ModelContextProvider = ({ children }: { children: ReactNode }) => {
     const [model, setModel] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
     const [isThinking, setIsThinking] = useState<boolean>(false);
-    const [messages, setMessages] = useState<Messages[]>([]);
     const [abortController, setAbortController] = useState<AbortController | null>(null);
+    const [isSideOpen, setIsSideOpen] = useState<boolean>(false);
 
     return (
         <ModelContext.Provider
-            value={{ model, setModel, loading, setLoading, isThinking, setIsThinking, messages, setMessages, abortController, setAbortController }}
+            value={{ model, setModel, loading, setLoading, isThinking, setIsThinking, abortController, setAbortController, isSideOpen, setIsSideOpen }}
         >
 
             {children}

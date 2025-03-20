@@ -6,8 +6,10 @@ import { GlobeIcon, CaretDownIcon } from '@radix-ui/react-icons'
 import { useState } from 'react'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import { useModelContext } from '@/app/store/ContextProvider'
 
-const ThoughtMessage = ({ thought, reasoningTime, isActive } : { thought: string, reasoningTime: number, isActive: boolean } ) => {
+const ThoughtMessage = ({ thought, reasoningTime } : { thought: string, reasoningTime: number } ) => {
+    const { isThinking } = useModelContext()
     const [isExpanded, setIsExpanded] = useState(true)
     if (!thought) {
         return null
@@ -19,10 +21,10 @@ const ThoughtMessage = ({ thought, reasoningTime, isActive } : { thought: string
             onClick={() => setIsExpanded(!isExpanded)}>
                 <GlobeIcon className='w-3 h-3' />
                 <span className="text-xs text-nowrap text-black">
-                    Reasoning {reasoningTime && !isActive ? `for ${reasoningTime} second` : ""}
+                    Reasoning {reasoningTime ? `for ${reasoningTime} second` : ""}
                 </span>
                 <TailSpin
-                    visible={isActive}
+                    visible={isThinking}
                     color="currentColor"
                     height={12}
                     width={12}

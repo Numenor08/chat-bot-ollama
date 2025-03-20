@@ -1,6 +1,6 @@
 import { CopyIcon } from "@radix-ui/react-icons";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { dracula } from 'react-syntax-highlighter/dist/cjs/styles/prism'
+import { atomDark } from 'react-syntax-highlighter/dist/cjs/styles/prism'
 import Markdown from "react-markdown";
 import remarkGfm from 'remark-gfm'
 
@@ -36,7 +36,7 @@ const ChatMarkdown = ({ content, className }: { content: string, className: stri
                                         scrollbarWidth: "thin",
                                         scrollbarColor: "rgba(131, 131, 131, 0.5) transparent",
                                     }}
-                                    style={dracula}
+                                    style={atomDark}
                                     language={match[1]}
                                     PreTag="div"
                                     {...props}>

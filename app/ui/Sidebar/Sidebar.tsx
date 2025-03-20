@@ -4,15 +4,11 @@ import SideThread from "@/app/ui/Sidebar/SideThread";
 import { EnterIcon } from "@radix-ui/react-icons";
 import { db, Thread } from "@/app/lib/dexie";
 import { useLiveQuery } from "dexie-react-hooks";
+import { useModelContext } from "@/app/store/ContextProvider";
 import NewChatButton from "@/app/ui/Sidebar/NewChatButton";
 
-interface SidebarProps {
-  isSideOpen: boolean;
-  setIsSideOpen: (value: boolean) => void;
-}
-
-function Sidebar({ isSideOpen, setIsSideOpen }: SidebarProps) {
-
+function Sidebar() {
+  const { isSideOpen, setIsSideOpen } = useModelContext();
   const threads: Record<string, Thread[]> = useLiveQuery(() => db.getAllThreads(), []) || {}
 
   return (
@@ -20,15 +16,15 @@ function Sidebar({ isSideOpen, setIsSideOpen }: SidebarProps) {
       {/* Sidebar Overlay*/}
       <div
         className={`fixed inset-0 bg-black z-40 ${isSideOpen ? "opacity-30" : "opacity-0 hidden pointer-events-none"
-          } md:hidden`}
+          } lg:hidden`}
         onClick={() => setIsSideOpen(false)}></div>
       {/*  */}
 
       <div
-        className={`fixed w-72 overflow-clip top-0 left-0 h-full bg-zinc-50 border-r z-50 transition-all transform-gpu duration-300 ease-in-out ${isSideOpen
-          ? "max-md:translate-x-0 md:w-80"
-          : "max-md:-translate-x-full md:w-0"
-          } md:relative`}
+        className={`fixed max-lg:w-72 overflow-clip top-0 left-0 h-full bg-zinc-50 border-r z-50 transition-all transform-gpu duration-300 ease-in-out ${isSideOpen
+          ? "max-lg:translate-x-0 lg:w-80"
+          : "max-lg:-translate-x-full lg:w-0"
+          } lg:relative`}
       >
         <div className="p-4">
           <div className="flex justify-between items-center mb-2">

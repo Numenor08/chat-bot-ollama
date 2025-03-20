@@ -45,7 +45,7 @@ const ChooseModel = () => {
     }
 
     return (
-        <div className={`${abel.className} absolute z-20 top-2 flex bg-white border overflow-y-auto border-gray-300 rounded-3xl shadow`}>
+        <div className={`${abel.className} absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 max-w-44 flex bg-white border overflow-y-auto border-gray-300 rounded-3xl shadow`}>
             <select
                 className="appearance-none focus:outline-none p-3 pl-4 pr-10"
                 onClick={handleSelectClick}

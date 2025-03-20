@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { inter } from "@/app/fonts";
-import SidebarWrapper from "@/app/ui/Sidebar/SidebarWrapper";
+import Sidebar from "@/app/ui/Sidebar/Sidebar";
 import { ModelContextProvider } from "./store/ContextProvider";
 import "./globals.css";
 
@@ -20,7 +20,7 @@ export default function RootLayout({
         className={`${inter.className} antialiased flex h-screen w-screen`}
       >
         <ModelContextProvider>
-          <SidebarWrapper />
+          <Sidebar />
           {children}
         </ModelContextProvider>
       </body>

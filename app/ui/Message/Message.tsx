@@ -3,13 +3,12 @@ import { useEffect, useRef, useState, useMemo, memo } from "react";
 import { Messages } from "@/app/types/types";
 import ThoughtMessage from "@/app/ui/Message/ThoughtMessage";
 import { ThreeDots } from "react-loader-spinner";
-import { useModelContext } from "@/app/store/ContextProvider";
 import Image from 'next/image'
 import ChatMarkdown from "@/app/ui/Message/ChartMarkdown";
 
-const MessageItem = memo(({ msg, index, isThinking, messages }: { msg: Messages; index: number; isThinking: boolean; messages: Messages[] }) => {
+const MessageItem = memo(({ msg, index, messages }: { msg: Messages; index: number; messages: Messages[] }) => {
     const renderContent = useMemo(() => {
-        return (content: string, reasoningTime: number = 0) => {
+        return (content: string, reasoningTime: number ) => {
             if (content.includes("<think>") && !content.includes("</think>")) {
                 content += "</think>";
             }
@@ -23,7 +22,6 @@ const MessageItem = memo(({ msg, index, isThinking, messages }: { msg: Messages;
                         <ThoughtMessage
                             reasoningTime={reasoningTime}
                             thought={thoughtContent}
-                            isActive={index === messages.length - 1 && isThinking}
                         />
                         {remainingContent && (
                             <ChatMarkdown className="prose max-w-max text-sm/6 w-full" content={remainingContent} />
@@ -35,16 +33,15 @@ const MessageItem = memo(({ msg, index, isThinking, messages }: { msg: Messages;
                 <ChatMarkdown className="prose max-w-max text-sm/6 w-full" content={content.trim()} />
             );
         };
-    }, [index, isThinking, messages]);
+    }, [index, messages]);
+    if (!msg) return null;
 
     return (
         <div className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} mb-2`}>
             <div className={`flex flex-col ${msg.role === "user" ? "items-end" : "items-start"} w-full`}>
                 <div className={`break-words px-4 py-2 my-8 rounded-lg text-black ${msg.role === "user" ? "bg-gray-100 max-w-[75%]" : "bg-none w-full"} animate-fade-in`}>
-                    {msg.content ? (
-                        renderContent(msg.content, msg?.reasoningTime)
-                    ) : (
-                        <ThreeDots color="#141414" height={15} width={15} />
+                    {msg.content && (
+                        renderContent(msg.content, msg.reasoningTime || 0)
                     )}
                 </div>
                 {msg.image && msg.image.length > 0 && (
@@ -61,17 +58,21 @@ const MessageItem = memo(({ msg, index, isThinking, messages }: { msg: Messages;
     );
 });
 
-const MessageList = memo(({ messages }: { messages: Messages[] }) => {
+const MessageList = memo(({ previousMessages, currentMessage, isPending, hasError }: { 
+    previousMessages: Messages[]; 
+    currentMessage: Messages | null; 
+    isPending: boolean; 
+    hasError: boolean; 
+}) => {
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
     const [isAutoScroll, setIsAutoScroll] = useState(true);
-    const { isThinking } = useModelContext();
 
     useEffect(() => {
         if (isAutoScroll) {
             messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
         }
-    }, [messages, isAutoScroll]);
+    }, [previousMessages, currentMessage, isAutoScroll]);
 
     const handleScroll = () => {
         if (!containerRef.current) return;
@@ -86,10 +87,29 @@ const MessageList = memo(({ messages }: { messages: Messages[] }) => {
         <div
             ref={containerRef}
             onScroll={handleScroll}
-            className={`text-sm w-full h-auto max-h-[36rem] overflow-y-auto p-4 message-area`}>
-            {messages.map((msg, index) => (
-                <MessageItem key={index} msg={msg} index={index} isThinking={isThinking} messages={messages} />
+            className={`text-sm w-full h-full max-h-[40rem] mb-4 overflow-y-auto px-4 message-area`}
+        >
+            {previousMessages && previousMessages.map((msg, index) => (
+                <MessageItem key={index} msg={msg} index={index} messages={previousMessages} />
             ))}
+            {currentMessage && (
+                <MessageItem
+                    key="current"
+                    msg={currentMessage}
+                    index={previousMessages.length}
+                    messages={[...previousMessages, currentMessage]}
+                />
+            )}
+            {isPending && !hasError && (
+                <div className="flex justify-start items-center px-4 py-2 my-8">
+                    <ThreeDots color="#141414" height={15} width={15} />
+                </div>
+            )}
+            {hasError && (
+                <div className="flex justify-start items-center px-4 py-2 my-8 text-red-500">
+                    Server Error!
+                </div>
+            )}
             <div ref={messagesEndRef} />
         </div>
     );
