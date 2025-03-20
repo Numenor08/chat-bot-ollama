@@ -1,40 +1,12 @@
 "use client";
-import { useEffect, useState, useContext } from "react";
+import { useState } from "react";
 import { TriangleDownIcon } from "@radix-ui/react-icons";
 import { abel } from "@/app/fonts";
 import { useModelContext } from "@/app/store/ContextProvider";
 
-interface models {
-    name: string;
-    model: string;
-    modified_at: string;
-    size: number;
-    digest: string;
-    details: object;
-}
-
 const ChooseModel = () => {
-    const [listModels, setListModels] = useState<models[] | null>(null);
     const [isOpen, setIsOpen] = useState(false);
-    const { model, setModel } = useModelContext();
-
-    useEffect(() => {
-        const fetchModels = async () => {
-            try {
-                const res = await fetch("/api/chat/model");
-                if (!res.ok) throw new Error("Failed to fetch");
-                const data = await res.json();
-                setListModels(data.models);
-                if (model === "") {
-                    setModel(data.models[0].name);
-                }
-            } catch (error) {
-                console.error("Fetch error:", error);
-            }
-        };
-        fetchModels();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    const { model, setModel, listModels } = useModelContext();
 
     const handleSelectClick = () => {
         setIsOpen(!isOpen);
@@ -45,16 +17,16 @@ const ChooseModel = () => {
     }
 
     return (
-        <div className={`${abel.className} absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 max-w-44 flex bg-white border overflow-y-auto border-gray-300 rounded-3xl shadow`}>
+        <div className={`${abel.className} absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 min-w-44 flex bg-white border overflow-y-auto overflow-x-hidden border-gray-300 rounded-3xl shadow`}>
             <select
-                className="appearance-none focus:outline-none p-3 pl-4 pr-10"
+                className="appearance-none focus:outline-none p-1 pl-4 pr-10"
                 onClick={handleSelectClick}
                 onBlur={() => setIsOpen(false)}
                 onChange={handleSelectChange}
-                value={model}
+                value={model ? model : 'no-model'}
             >
                 {!listModels ? (
-                    <option disabled>No models installed</option>
+                    <option value={'no-model'} disabled>No models installed</option>
                 ) : (
                     listModels.map((model, i) => (
                         <option value={model.name} key={i}>{model.name}</option>

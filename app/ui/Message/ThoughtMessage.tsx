@@ -41,17 +41,7 @@ const ThoughtMessage = ({ thought, reasoningTime } : { thought: string, reasonin
                     <div className='relative pl-9 mb-12'>
                         <div className='flex flex-col gap-3 text-xs/6 text-gray-400'>
                             <Markdown
-                            remarkPlugins={[remarkGfm]}
-                            components={{
-                                code({ className, children, ...props }: { className?: string, children?: React.ReactNode }) {
-                                    return (
-                                        <code className={`${className} text-sm`} {...props}>
-                                            {children}
-                                        </code>
-                                    )
-                                }
-                            }}
-                            >
+                            remarkPlugins={[remarkGfm]}>
                             { thought }
                             </Markdown>
                         </div>

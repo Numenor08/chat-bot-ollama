@@ -1,8 +1,17 @@
 'use client';
 
-import { useState, ReactNode, useContext } from "react";
+import { useState, ReactNode, useContext, useEffect } from "react";
 import { createContext } from "react";
-import { Messages } from "@/app/types/types";
+import ollama from "ollama/browser";
+
+interface models {
+    name: string;
+    model: string;
+    modified_at: Date;
+    size: number;
+    digest: string;
+    details: object;
+}
 
 interface ModelContextProps {
     model: string;
@@ -11,10 +20,10 @@ interface ModelContextProps {
     setLoading: (loading: boolean) => void;
     isThinking: boolean;
     setIsThinking: (thinking: boolean) => void;
-    abortController: AbortController | null;
-    setAbortController: React.Dispatch<React.SetStateAction<AbortController | null>>;
     isSideOpen: boolean;
     setIsSideOpen: (value: boolean) => void;
+    listModels: models[] | null;
+    setListModels: React.Dispatch<React.SetStateAction<models[] | null>>;
 }
 
 export const ModelContext = createContext<ModelContextProps>({
@@ -24,26 +33,49 @@ export const ModelContext = createContext<ModelContextProps>({
     setLoading: () => { },
     isThinking: false,
     setIsThinking: () => { },
-    abortController: new AbortController(),
-    setAbortController: () => { },
     isSideOpen: false,
     setIsSideOpen: () => { },
+    listModels: null,
+    setListModels: () => { },
 });
 
 export const ModelContextProvider = ({ children }: { children: ReactNode }) => {
     const [model, setModel] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
     const [isThinking, setIsThinking] = useState<boolean>(false);
-    const [abortController, setAbortController] = useState<AbortController | null>(null);
     const [isSideOpen, setIsSideOpen] = useState<boolean>(false);
+    const [listModels, setListModels] = useState<models[] | null>(null);
+    useEffect(() => {
+            const fetchModels = async () => {
+                try {
+                    const { models }: {models: models[]} = await ollama.list();
+                    setListModels(models);
+                    if (model === "") {
+                        setModel(models[0].name);
+                    }
+                } catch (error) {
+                    console.error("Fetch error:", error);
+                }
+            };
+            fetchModels();
+        }, []);
 
     return (
         <ModelContext.Provider
-            value={{ model, setModel, loading, setLoading, isThinking, setIsThinking, abortController, setAbortController, isSideOpen, setIsSideOpen }}
+            value={{
+                model,
+                setModel,
+                loading,
+                setLoading,
+                isThinking,
+                setIsThinking,
+                isSideOpen,
+                setIsSideOpen,
+                listModels,
+                setListModels,
+            }}
         >
-
             {children}
-
         </ModelContext.Provider>
     );
 }

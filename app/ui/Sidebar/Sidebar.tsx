@@ -21,12 +21,12 @@ function Sidebar() {
       {/*  */}
 
       <div
-        className={`fixed max-lg:w-72 overflow-clip top-0 left-0 h-full bg-zinc-50 border-r z-50 transition-all transform-gpu duration-300 ease-in-out ${isSideOpen
+        className={`fixed max-lg:w-72 max-[450px]:w-56 overflow-x-clip top-0 left-0 h-full max-h-screen bg-zinc-50 border-r z-50 transition-all transform-gpu duration-300 ease-in-out ${isSideOpen
           ? "max-lg:translate-x-0 lg:w-80"
           : "max-lg:-translate-x-full lg:w-0"
           } lg:relative`}
       >
-        <div className="p-4">
+        <div className="p-4 h-min max-h-screen overflow-y-auto">
           <div className="flex justify-between items-center mb-2">
             <h1 className="font-extrabold text-xl ml-1 cursor-default">
               ChatBot
@@ -39,7 +39,7 @@ function Sidebar() {
 
           <NewChatButton />
 
-          <div className="my-4 flex flex-col space-y-4">
+          <div className="my-4 flex flex-col h-min space-y-4 overflow-y-auto">
             {threads && Object.entries(threads).map(([group, groupThreads]) => (
               <div key={group}>
                 {groupThreads.length !== 0 && (

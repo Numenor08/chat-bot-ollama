@@ -7,13 +7,14 @@ import { Messages } from "@/app/types/types";
 import { useModelContext } from "@/app/store/ContextProvider";
 import { db } from "@/app/lib/dexie";
 import { useParams, useRouter } from "next/navigation";
+import ollama from 'ollama/browser'
 
-const ChatApp = () => {
+const ChatApp = ({ className }: {className?: string}) => {
     const [previousMessages, setPreviousMessages] = useState<Messages[]>([]);
     const [currentMessage, setCurrentMessage] = useState<Messages | null>(null);
     const [isPending, setIsPending] = useState(false);
     const [hasError, setHasError] = useState(false);
-    const { setLoading, setIsThinking, abortController, setAbortController } = useModelContext();
+    const { setLoading, setIsThinking } = useModelContext();
     const { threadId } = useParams();
     const router = useRouter();
     const currentMessageRef = useRef<Messages | null>(null);
@@ -68,58 +69,38 @@ const ChatApp = () => {
             setIsPending(true);
             setHasError(false);
 
-            const controller = new AbortController();
-            setAbortController(controller);
-
-            const res = await fetch("/api/chat", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ messages: updatedMessages, model }),
-                signal: controller.signal,
+            const res = await ollama.chat({
+                model: model,
+                messages: updatedMessages,
+                stream: true,
             });
 
-            if (!res.body) throw new Error("Something went wrong");
             setIsPending(false);
-            startReasoning.current = Date.now();
 
-            const reader = res.body.getReader();
-            const decoder = new TextDecoder();
             let botReply = "";
             let reasoningTime = 0;
 
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-
-                const textChunk = decoder.decode(value, { stream: true });
-                const lines = textChunk.trim().split("\n");
-
-                for (const line of lines) {
-                    if (!line) continue;
-
-                    try {
-                        const parsedData = JSON.parse(line);
-                        const { content, reasoningTime: newReasoningTime } = parsedData;
-                        botReply += content;
-
-                        reasoningTime = newReasoningTime;
-                        setCurrentMessage((prev) => {
-                            currentMessageRef.current = {
-                                role: "assistant",
-                                content: botReply,
-                                reasoningTime: reasoningTime,
-                            };
-                            return currentMessageRef.current;
-                        });
-
-                        if (content.includes("<think>")) { setIsThinking(true) }
-
-                        if (content.includes("</think>")) { setIsThinking(false) }
-
-                    } catch (error) {
-                        console.error("Error parsing JSON:", error);
-                    }
+            for await (const part of res) {
+                if (part.message.content.includes("<think>")) {
+                    startReasoning.current = Date.now();
+                    setIsThinking(true);
                 }
+                if (part.message.content.includes("</think>")) {
+                    const endReasoning = Date.now();
+                    reasoningTime = Math.floor((endReasoning - startReasoning.current!) / 1000);
+                    startReasoning.current = reasoningTime
+                    setIsThinking(false);
+                }
+                botReply += part.message.content;
+
+                setCurrentMessage((prev) => {
+                    currentMessageRef.current = {
+                        role: "assistant",
+                        content: botReply,
+                        reasoningTime: reasoningTime,
+                    }
+                    return currentMessageRef.current as Messages;
+                });
             }
 
             setPreviousMessages((prev) => [
@@ -130,9 +111,9 @@ const ChatApp = () => {
                 thread_id: currentThreadId as string,
                 role: "assistant",
                 content: botReply,
-                reasoning_time: reasoningTime,
+                reasoning_time: startReasoning.current,
             });
-            
+
             setCurrentMessage(null);
         } catch (error) {
             if (error instanceof Error) {
@@ -140,6 +121,7 @@ const ChatApp = () => {
                     const endReasoningTime = Date.now();
                     const clientReasoningTime = Math.floor((endReasoningTime - startReasoning.current!) / 1000);
                     console.warn("Request was aborted");
+                    setCurrentMessage(null);
                     if (currentMessageRef.current) {
                         const remainderMessage: Messages = currentMessageRef.current;
                         const newReasoningTime = remainderMessage.reasoningTime ? remainderMessage.reasoningTime : clientReasoningTime;
@@ -162,20 +144,15 @@ const ChatApp = () => {
             }
         } finally {
             setLoading(false);
-            setAbortController(null);
             startReasoning.current = null;
         }
     };
 
     const handleCancelRequest = () => {
-        if (abortController) {
-            abortController.abort();
-            setAbortController(null);
-            setIsPending(false);
-            setLoading(false);
-            setIsThinking(false);
-            setCurrentMessage(null);
-        }
+        ollama.abort();
+        setIsPending(false);
+        setLoading(false);
+        setIsThinking(false);
     };
 
     useEffect(() => {
@@ -214,22 +191,20 @@ const ChatApp = () => {
 
     useEffect(() => {
         return () => {
-            if (abortController) {
-                handleCancelRequest();
-            }
+            handleCancelRequest();
         };
     }, [])
 
     return (
-        <>
-            <MessageList
+        <div className={className}>
+            {<MessageList
                 previousMessages={previousMessages}
                 currentMessage={currentMessage}
                 isPending={isPending}
                 hasError={hasError}
-            />
+            />}
             <InputPrompt onSendMessage={handleSendMessage} handleCancelRequest={handleCancelRequest} />
-        </>
+        </div>
     );
 };
 

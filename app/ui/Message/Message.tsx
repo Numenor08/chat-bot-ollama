@@ -6,7 +6,21 @@ import { ThreeDots } from "react-loader-spinner";
 import Image from 'next/image'
 import ChatMarkdown from "@/app/ui/Message/ChartMarkdown";
 
-const MessageItem = memo(({ msg, index, messages }: { msg: Messages; index: number; messages: Messages[] }) => {
+interface MessageItemProps {
+    msg: Messages;
+    index: number;
+    messages: Messages[];
+}
+
+interface MessageListProps {
+    previousMessages: Messages[]; 
+    className?: string;
+    currentMessage: Messages | null; 
+    isPending: boolean; 
+    hasError: boolean; 
+}
+
+const MessageItem = memo(({ msg, index, messages }: MessageItemProps) => {
     const renderContent = useMemo(() => {
         return (content: string, reasoningTime: number ) => {
             if (content.includes("<think>") && !content.includes("</think>")) {
@@ -39,7 +53,7 @@ const MessageItem = memo(({ msg, index, messages }: { msg: Messages; index: numb
     return (
         <div className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} mb-2`}>
             <div className={`flex flex-col ${msg.role === "user" ? "items-end" : "items-start"} w-full`}>
-                <div className={`break-words px-4 py-2 my-8 rounded-lg text-black ${msg.role === "user" ? "bg-gray-100 max-w-[75%]" : "bg-none w-full"} animate-fade-in`}>
+                <div className={`break-words px-4 py-2 my-6 rounded-lg text-black ${msg.role === "user" ? "bg-gray-100 max-w-[75%]" : "bg-none w-full"} animate-fade-in`}>
                     {msg.content && (
                         renderContent(msg.content, msg.reasoningTime || 0)
                     )}
@@ -58,12 +72,7 @@ const MessageItem = memo(({ msg, index, messages }: { msg: Messages; index: numb
     );
 });
 
-const MessageList = memo(({ previousMessages, currentMessage, isPending, hasError }: { 
-    previousMessages: Messages[]; 
-    currentMessage: Messages | null; 
-    isPending: boolean; 
-    hasError: boolean; 
-}) => {
+const MessageList = memo(({ previousMessages, className, currentMessage, isPending, hasError }: MessageListProps) => {
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
     const [isAutoScroll, setIsAutoScroll] = useState(true);
@@ -87,7 +96,7 @@ const MessageList = memo(({ previousMessages, currentMessage, isPending, hasErro
         <div
             ref={containerRef}
             onScroll={handleScroll}
-            className={`text-sm w-full h-full max-h-[40rem] mb-4 overflow-y-auto px-4 message-area`}
+            className={`text-sm w-full h-full overflow-y-auto px-4 ${className || ''}`}
         >
             {previousMessages && previousMessages.map((msg, index) => (
                 <MessageItem key={index} msg={msg} index={index} messages={previousMessages} />
