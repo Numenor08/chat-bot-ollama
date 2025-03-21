@@ -17,6 +17,7 @@
 body {
   /* color: var(--foreground); */
   /* background: var(--background); */
+  overflow: overlay;
   font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -25,25 +26,29 @@ code {
     font-family: 'JetBrains Mono', monospace !important;
 }
 
-/* Styling scrollbar agar mirip ChatGPT/Gemini */
+/* Styling scrollbar ChatGPT/Gemini */
 .textarea-custom::-webkit-scrollbar {
   width: 6px;
 }
 
 .textarea-custom::-webkit-scrollbar-thumb {
+  cursor: default;
   background: rgba(131, 131, 131, 0.5);
   border-radius: 10px;
+}
+
+.textarea-custom::-webkit-scrollbar-thumb:hover {
+  background: rgba(131, 131, 131, 0.7);
 }
 
 .textarea-custom::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.message-area::-webkit-scrollbar {
-  width: 8px;
-}
-
-.message-area::-webkit-scrollbar-thumb {
-  background: rgba(131, 131, 131, 0.5);
+  cursor: default;
   border-radius: 10px;
+  background: rgba(236, 236, 236, 0.5);
+}
+
+.transition-height {
+  -webkit-transition: height 0.2s ease;
+	-moz-transition: height 0.2s ease;
+	transition: height 0.2s ease;
 }
