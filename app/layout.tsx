@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { inter } from "@/app/fonts";
 import Sidebar from "@/app/ui/Sidebar/Sidebar";
 import { ModelContextProvider } from "./store/ContextProvider";
@@ -8,6 +8,11 @@ export const metadata: Metadata = {
   title: "Chat Bot",
   description: "Chat Bot UI Ollama",
 };
+
+export const viewport: Viewport = {
+  initialScale: 1,
+  width: 'device-width'
+}
 
 export default function RootLayout({
   children,

@@ -1,5 +1,4 @@
-import { Abel } from "next/font/google";
-import { Inter } from "next/font/google";
+import { Abel, Poppins, Inter } from "next/font/google";
 
 export const abel = Abel({
     weight: "400",
@@ -12,3 +11,9 @@ export const inter = Inter({
     style: "normal",
     display: "swap",
 })
+
+export const poppins = Poppins({
+    weight: "400",
+    subsets: ["latin"],
+    style: "normal",
+});

@@ -13,6 +13,7 @@
     "@types/react-syntax-highlighter": "^15.5.13",
     "dexie": "^4.0.11",
     "dexie-react-hooks": "^1.1.7",
+    "lucide-react": "^0.483.0",
     "next": "15.1.7",
     "ollama": "^0.5.13",
     "react": "^19.0.0",

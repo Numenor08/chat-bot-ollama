@@ -87,7 +87,7 @@ const MessageList = memo(({ previousMessages, className, currentMessage, isPendi
         if (!containerRef.current) return;
 
         const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
-        const isAtBottom = scrollHeight - scrollTop <= clientHeight + 12; // Buffer 12px
+        const isAtBottom = scrollHeight - scrollTop <= clientHeight + 48; // Buffer
 
         setIsAutoScroll(isAtBottom);
     };

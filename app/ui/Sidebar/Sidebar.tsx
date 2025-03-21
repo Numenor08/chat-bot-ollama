@@ -6,6 +6,8 @@ import { db, Thread } from "@/app/lib/dexie";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useModelContext } from "@/app/store/ContextProvider";
 import NewChatButton from "@/app/ui/Sidebar/NewChatButton";
+import Image from "next/image";
+import Link from "next/link";
 
 function Sidebar() {
   const { isSideOpen, setIsSideOpen } = useModelContext();
@@ -26,22 +28,30 @@ function Sidebar() {
           : "max-lg:-translate-x-full lg:w-0"
           } lg:relative`}
       >
-        <div className="py-4 pl-4 flex flex-col h-full overflow-y-auto">
-          <div className="flex justify-between items-center mb-2 mr-4">
-            <h1 className="font-extrabold text-xl ml-1 cursor-default">
-              ChatBot
-            </h1>
+        <div className="relative py-4 pl-4 flex flex-col h-full overflow-y-auto gap-8">
+          <div className="flex justify-between items-center mr-4">
+            <Link href={'/'}>
+              <div className="flex items-center">
+                <Image src="/ollama-white.png" width={40} height={40} alt="Ollama White Logo" />
+                <h1 className="font-extrabold text-xl ml-1">
+                  Ollama UI
+                </h1>
+              </div>
+            </Link>
+
             <EnterIcon
               onClick={() => setIsSideOpen(!isSideOpen)}
               className={`h-6 w-6 cursor-pointer text-gray-500 hover:text-black transition-colors duration-300 rotate-180`}
             />
           </div>
 
-          <NewChatButton />
+          <div className="flex justify-between items-center mr-4">
+            <NewChatButton />
+          </div>
 
-          <div className="my-4 flex-1 flex flex-col space-y-4 overflow-y-auto sidebar-custom pr-2">
+          <div className="flex-1 flex flex-col overflow-y-auto sidebar-custom pr-2">
             {threads && Object.entries(threads).map(([group, groupThreads]) => (
-              <div key={group}>
+              <div key={group} className="mb-6">
                 {groupThreads.length !== 0 && (
                   <h3 className="text-black text-left text-xs font-sans pb-2 font-semibold ml-2 sticky bg-zinc-50 top-0 bg- z-10">{group}</h3>)
                 }

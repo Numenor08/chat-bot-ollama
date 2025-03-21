@@ -1,13 +1,13 @@
 "use client"
 
-import type React from "react"
-
 import { useState, useRef, useEffect } from "react"
-import { PaperPlaneIcon, ImageIcon, CrossCircledIcon } from "@radix-ui/react-icons"
+import { PaperPlaneIcon, CrossCircledIcon, CodeIcon } from "@radix-ui/react-icons"
 import { useModelContext } from "@/app/store/ContextProvider"
 import Image from "next/image"
+import { recomendation, imageModels } from "@/app/store/data"
+import { Book, ChefHat, Smile, Siren, ImagePlus, ImageOff } from 'lucide-react';
+import { useParams } from "next/navigation";
 
-const imageModels = ["llava", "llava-llama3", "llama3.2-vision", "minicpm-v", "moondream", "bakllava", "llava-phi3"]
 
 const InputPrompt = ({
   onSendMessage,
@@ -22,6 +22,7 @@ const InputPrompt = ({
   const hiddenTextareaRef = useRef<HTMLTextAreaElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
   const role = "user"
+  const { threadId } = useParams()
   const { model, loading } = useModelContext()
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -97,7 +98,7 @@ const InputPrompt = ({
       <form
         ref={formRef}
         onSubmit={handleSubmit}
-        className={`relative bg-white text-sm w-full border rounded-3xl py-3 pl-12 pr-14 shadow-[0_4px_5px_-2px_rgb(0,0,0,0.1)] focus:shadow-[0_4px_5px_-1px_rgb(0,0,0,0.1)]`}
+        className={`relative bg-white flex items-center justify-center text-sm w-full border rounded-3xl py-3 pl-12 pr-14 shadow-[0_4px_5px_-2px_rgb(0,0,0,0.1)] focus:shadow-[0_4px_5px_-1px_rgb(0,0,0,0.1)]`}
       >
         {image && (
           <div className="relative w-min min-w-24 min-h-16 mb-4">
@@ -119,12 +120,15 @@ const InputPrompt = ({
         <input type="text" name="role" value={role} readOnly className="hidden" />
         <label
           htmlFor="image"
-          className={`absolute bottom-2.5 left-3 p-2 w-8 h-8 rounded-full flex items-center justify-center
-      ${isImageSupported(model) ? "hover:bg-gray-200 cursor-pointer" : "opacity-50 cursor-not-allowed"}`}
+          className={`absolute bottom-[0.35rem] left-2 p-2 w-8 h-8 rounded-full flex items-center justify-center
+            ${isImageSupported(model) ? "hover:bg-gray-200 cursor-pointer" : "opacity-50 cursor-not-allowed"}`}
         >
           <div className="relative w-5 h-5 flex items-center justify-center">
-            <ImageIcon className="w-5 h-5 text-neutral-700" />
-            {!isImageSupported(model) && <div className="absolute w-7 h-0.5 bg-neutral-700 rotate-45"></div>}
+            {isImageSupported(model) ? (
+              <ImagePlus className="w-5 h-5 text-neutral-700" />
+            ) : (
+              <ImageOff className="w-5 h-5 text-neutral-700" />
+            )}
           </div>
         </label>
         <input
@@ -165,19 +169,38 @@ const InputPrompt = ({
         {loading ? (
           <button
             onClick={handleCancelRequest}
-            className="absolute bottom-2.5 right-3 bg-black cursor-pointer hover:opacity-80 p-2 w-8 h-8 rounded-full flex items-center justify-center"
+            className="absolute bottom-[0.35rem] right-2 bg-black cursor-pointer hover:opacity-80 p-2 w-8 h-8 rounded-full flex items-center justify-center"
           >
             <div className="bg-white aspect-square w-[0.6rem]"></div>
           </button>
         ) : (
           <button
             type="submit"
-            className="absolute bottom-2.5 right-3 bg-black cursor-pointer hover:opacity-80 p-2 w-8 h-8 rounded-full flex items-center justify-center"
+            className="absolute bottom-[0.35rem] right-2 bg-black cursor-pointer hover:opacity-80 p-2 w-8 h-8 rounded-full flex items-center justify-center"
           >
             <PaperPlaneIcon className="text-white w-full h-full ml-[2px]" />
           </button>
         )}
       </form>
+
+      {/* Recomentation */}
+      <div className="text-xs tracking-tigh flex justify-start justify-center mt-4 gap-4 flex-wrap">
+        {!threadId && recomendation.map((item, index) => (
+          <div
+            key={index}
+            onClick={() => setPrompt(`${item.msg} `)}
+            className={`px-2 flex items-center ${item.color} justify-center cursor-pointer ${item.bgColor} border w-min rounded-xl text-nowrap`}
+          >
+            {item.icon === "code" && <CodeIcon className="w-4 h-4 inline-block mr-1" />}
+            {item.icon === "book" && <Book className="w-4 h-4 inline-block mr-1" />}
+            {item.icon === "chefhat" && <ChefHat className="w-4 h-4 inline-block mr-1" />}
+            {item.icon === "smile" && <Smile className="w-4 h-4 inline-block mr-1" />}
+            {item.icon === "lightbulb" && <Siren className="w-4 h-4 inline-block mr-1" />}
+            <p>{item.title}</p>
+          </div>
+        ))}
+      </div>
+
     </div>
   )
 }
