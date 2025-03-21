@@ -39,7 +39,7 @@ function Sidebar() {
 
           <NewChatButton />
 
-          <div className="my-4 flex flex-col h-min space-y-4 overflow-y-auto sidebar-custom pr-2">
+          <div className="my-4 flex-1 flex flex-col space-y-4 overflow-y-auto sidebar-custom pr-2">
             {threads && Object.entries(threads).map(([group, groupThreads]) => (
               <div key={group}>
                 {groupThreads.length !== 0 && (
