@@ -33,7 +33,7 @@ function Sidebar() {
             <Link href={'/'}>
               <div className="flex items-center">
                 <Image src="/ollama-white.png" width={40} height={40} alt="Ollama White Logo" />
-                <h1 className="font-extrabold text-xl ml-1">
+                <h1 className="font-extrabold text-nowrap text-xl ml-1">
                   Ollama UI
                 </h1>
               </div>
@@ -53,7 +53,7 @@ function Sidebar() {
             {threads && Object.entries(threads).map(([group, groupThreads]) => (
               <div key={group} className="mb-6">
                 {groupThreads.length !== 0 && (
-                  <h3 className="text-black text-left text-xs font-sans pb-2 font-semibold ml-2 sticky bg-zinc-50 top-0 bg- z-10">{group}</h3>)
+                  <h3 className="text-black text-nowrap text-left text-xs font-sans pb-2 font-semibold ml-2 sticky bg-zinc-50 top-0 bg- z-10">{group}</h3>)
                 }
 
                 {groupThreads.map((thread: any) => (
