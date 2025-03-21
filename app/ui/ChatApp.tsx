@@ -59,11 +59,11 @@ const ChatApp = ({ className }: {className?: string}) => {
                 InputMessages,
             ]);
 
-            sendMessageToBackend([...previousMessages, InputMessages], model, currentThreadId);
+            sendMessageToOllama([...previousMessages, InputMessages], model, currentThreadId);
         }
     };
 
-    const sendMessageToBackend = async (updatedMessages: Messages[], model: string, currentThreadId: string | string[]) => {
+    const sendMessageToOllama = async (updatedMessages: Messages[], model: string, currentThreadId: string | string[]) => {
         try {
             setLoading(true);
             setIsPending(true);

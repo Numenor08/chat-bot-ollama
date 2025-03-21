@@ -1,5 +1,5 @@
 'use client';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { DotsHorizontalIcon, Pencil2Icon, TrashIcon } from '@radix-ui/react-icons';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
@@ -82,11 +82,18 @@ function SideThread({ isSideOpen, threadId, value }: SideThreadProps) {
     }
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' || e.key === 'Escape') {
             e.preventDefault();
             inputRef.current?.blur();
         }
     };
+    
+    useEffect(() => {
+        if (!isSideOpen) {
+            setIsThreadOpen(false);
+        }
+
+    },[isSideOpen]);
 
     return (
         <>
@@ -105,14 +112,14 @@ function SideThread({ isSideOpen, threadId, value }: SideThreadProps) {
                             }}
                             className="w-full"
                         />
-                        {isThreadOpen && isSideOpen ? (
+                        {isThreadOpen ? (
                             <>
                                 <div
-                                    className={`fixed inset-0 cursor-auto z-1 ${isThreadOpen ? "pointer-events-auto w-full h-full" : "hidden pointer-events-none"}`}
+                                    className={`fixed inset-0 cursor-auto z-10 ${isThreadOpen ? "pointer-events-auto w-full h-full" : "hidden pointer-events-none"}`}
                                     onClick={() => setIsThreadOpen(false)}>
                                 </div>
                                 <DropdownMenu
-                                    className="absolute font-normal top-6 right-0 bg-white rounded-md p-1 w-28 z-20"
+                                    className="absolute font-normal top-6 right-0 bg-white text-black rounded-md p-1 w-28 z-20 "
                                     ref={dropdownRef}
                                 >
                                     <DropdownItem onClick={handleEditMode}>

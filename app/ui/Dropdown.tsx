@@ -13,7 +13,7 @@ interface DropdownItem extends DropdownProps {
 
 export const DropdownMenu = ({ children, className, ref }: DropdownProps) => {
     return (
-        <div ref={ref} className={`${className} cursor-default flex flex-col items-center justify-start bg-white text-black shadow-md rounded-lg`}>
+        <div ref={ref} className={`${className} cursor-default flex flex-col items-center justify-start shadow-md rounded-lg`}>
             {children}
         </div>
     );
