@@ -96,7 +96,7 @@ const MessageList = memo(({ previousMessages, className, currentMessage, isPendi
         <div
             ref={containerRef}
             onScroll={handleScroll}
-            className={`text-sm w-full h-full overflow-y-auto px-4 ${className || ''}`}
+            className={`${className}`}
         >
             {previousMessages && previousMessages.map((msg, index) => (
                 <MessageItem key={index} msg={msg} index={index} messages={previousMessages} />
