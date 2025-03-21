@@ -49,6 +49,7 @@ export const ModelContextProvider = ({ children }: { children: ReactNode }) => {
             const fetchModels = async () => {
                 try {
                     const { models }: {models: models[]} = await ollama.list();
+                    models.sort((a, b) => a.name.localeCompare(b.name));
                     setListModels(models);
                     if (model === "") {
                         setModel(models[0].name);
