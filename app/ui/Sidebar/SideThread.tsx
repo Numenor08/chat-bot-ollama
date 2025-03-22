@@ -99,11 +99,11 @@ function SideThread({ isSideOpen, threadId, value }: SideThreadProps) {
         <>
             <Link href={`/c/${threadId}`} onClick={handleClick}>
                 <div
-                    className={`${isMatched ? 'bg-gray-200' : 'bg-red'} relative overflow-visible flex justify-between items-center p-[0.350rem] font-sans text-sm hover:bg-gray-100 w-full rounded-lg cursor-pointer group`}
+                    className={`${isMatched ? 'bg-gray-200 dark:bg-neutral-700' : 'bg-red'} relative overflow-visible flex justify-between items-center p-[0.350rem] font-sans text-sm hover:bg-gray-100 dark:hover:bg-neutral-800 w-full rounded-lg cursor-pointer group`}
                 >
                     <input maxLength={25} onKeyDown={handleKeyDown} ref={inputRef} onBlur={handleBlur} spellCheck='false' readOnly={!isEditMode} value={inputValue} onChange={handleChange} className={`${isEditMode ? 'outline-black outline-4 bg-white cursor-text' : 'outline-none'} cursor-pointer p-[0.175rem] bg-transparent  align-middle text-nowrap`}></input>
                     <div
-                        className={`${isMatched || isThreadOpen ? 'opacity-100' : ''} relative flex justify-between items-center w-5 h-5 opacity-0 group-hover:opacity-100 text-gray-500 font-bold hover:text-black dots-container`}
+                        className={`${isMatched || isThreadOpen ? 'opacity-100' : ''} relative flex justify-between items-center w-5 h-5 opacity-0 group-hover:opacity-100 font-bold text-gray-500 dark:text-neutral-400 hover:text-black dark:hover:text-white dots-container`}
                     >
                         <DotsHorizontalIcon
                             onClick={(e) => {

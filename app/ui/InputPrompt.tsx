@@ -7,6 +7,7 @@ import Image from "next/image"
 import { recomendation, imageModels } from "@/app/store/data"
 import { Book, ChefHat, Smile, Siren, ImagePlus, ImageOff } from 'lucide-react';
 import { useParams } from "next/navigation";
+import { text } from "stream/consumers"
 
 
 const InputPrompt = ({
@@ -85,6 +86,11 @@ const InputPrompt = ({
     }
   }
 
+  const handleRecomendation = (msg: string) => {
+    setPrompt(`${msg} `)
+    textareaRef.current?.focus()
+  }
+
   useEffect(() => {
     adjustHeight()
   }, [prompt])
@@ -98,7 +104,7 @@ const InputPrompt = ({
       <form
         ref={formRef}
         onSubmit={handleSubmit}
-        className={`relative bg-white flex items-center justify-center text-sm w-full border rounded-3xl py-3 pl-12 pr-14 shadow-[0_4px_5px_-2px_rgb(0,0,0,0.1)] focus:shadow-[0_4px_5px_-1px_rgb(0,0,0,0.1)]`}
+        className={`relative bg-white dark:bg-darkChat flex flex-col items-center justify-center text-sm w-full border dark:border-neutral-700 rounded-3xl py-3 pl-12 pr-14 shadow-[0_4px_5px_-2px_rgb(0,0,0,0.1)] focus:shadow-[0_4px_5px_-1px_rgb(0,0,0,0.1)]`}
       >
         {image && (
           <div className="relative w-min min-w-24 min-h-16 mb-4">
@@ -121,13 +127,13 @@ const InputPrompt = ({
         <label
           htmlFor="image"
           className={`absolute bottom-[0.35rem] left-2 p-2 w-8 h-8 rounded-full flex items-center justify-center
-            ${isImageSupported(model) ? "hover:bg-gray-200 cursor-pointer" : "opacity-50 cursor-not-allowed"}`}
+            ${isImageSupported(model) ? "hover:bg-gray-200 dark:hover:bg-neutral-600 cursor-pointer" : "opacity-50 cursor-not-allowed"}`}
         >
-          <div className="relative w-5 h-5 flex items-center justify-center">
+          <div className="relative w-5 h-5 text-neutral-700 dark:text-light flex items-center justify-center">
             {isImageSupported(model) ? (
-              <ImagePlus className="w-5 h-5 text-neutral-700" />
+              <ImagePlus />
             ) : (
-              <ImageOff className="w-5 h-5 text-neutral-700" />
+              <ImageOff />
             )}
           </div>
         </label>
@@ -142,7 +148,7 @@ const InputPrompt = ({
         />
         <textarea
           ref={textareaRef}
-          className="w-full bg-white transition-height overflow-y-auto leading-5 resize-none focus:outline-none bg-transparent"
+          className="w-full bg-white dark:bg-darkChat text-black dark:text-white transition-height overflow-y-auto leading-5 resize-none focus:outline-none bg-transparent textarea-custom"
           name="text"
           spellCheck="false"
           placeholder="Your Prompt Here"
@@ -158,7 +164,7 @@ const InputPrompt = ({
           ref={hiddenTextareaRef}
           aria-hidden="true"
           tabIndex={-1}
-          className="absolute opacity-0 top-0 left-0 h-0 pointer-events-none overflow-hidden w-full leading-5 resize-none"
+          className="absolute opacity-0 top-0 left-0 h-0 pointer-events-none overflow-hidden w-full leading-5 resize-none textarea-custom"
           style={{
             visibility: "hidden",
             padding: textareaRef.current ? window.getComputedStyle(textareaRef.current).padding : "0px",
@@ -169,27 +175,27 @@ const InputPrompt = ({
         {loading ? (
           <button
             onClick={handleCancelRequest}
-            className="absolute bottom-[0.35rem] right-2 bg-black cursor-pointer hover:opacity-80 p-2 w-8 h-8 rounded-full flex items-center justify-center"
+            className="absolute bottom-[0.35rem] right-2 bg-black dark:bg-light cursor-pointer hover:opacity-80 p-2 w-8 h-8 rounded-full flex items-center justify-center"
           >
-            <div className="bg-white aspect-square w-[0.6rem]"></div>
+            <div className="bg-white dark:bg-black aspect-square w-[0.6rem]"></div>
           </button>
         ) : (
           <button
             type="submit"
-            className="absolute bottom-[0.35rem] right-2 bg-black cursor-pointer hover:opacity-80 p-2 w-8 h-8 rounded-full flex items-center justify-center"
+            className="absolute bottom-[0.35rem] right-2 bg-black dark:bg-light cursor-pointer hover:opacity-80 p-2 w-8 h-8 rounded-full flex items-center justify-center"
           >
-            <PaperPlaneIcon className="text-white w-full h-full ml-[2px]" />
+            <PaperPlaneIcon className="text-white dark:text-black w-full h-full ml-[2px]" />
           </button>
         )}
       </form>
 
       {/* Recomentation */}
-      <div className="text-xs tracking-tigh flex justify-start justify-center mt-4 gap-4 flex-wrap">
+      <div className="text-xs tracking-tigh flex justify-center mt-4 gap-4 flex-wrap">
         {!threadId && recomendation.map((item, index) => (
           <div
             key={index}
-            onClick={() => setPrompt(`${item.msg} `)}
-            className={`px-2 flex items-center ${item.color} justify-center cursor-pointer ${item.bgColor} border w-min rounded-xl text-nowrap`}
+            onClick={() => handleRecomendation(item.msg)}
+            className={`px-2 flex items-center ${item.color} justify-center cursor-pointer ${item.bgColor} border dark:border-0 px-3 py-1 w-min rounded-xl hover:brightness-75 transition-[filter] text-nowrap`}
           >
             {item.icon === "code" && <CodeIcon className="w-4 h-4 inline-block mr-1" />}
             {item.icon === "book" && <Book className="w-4 h-4 inline-block mr-1" />}

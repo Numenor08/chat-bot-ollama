@@ -24,6 +24,8 @@ interface ModelContextProps {
     setIsSideOpen: (value: boolean) => void;
     listModels: models[] | null;
     setListModels: React.Dispatch<React.SetStateAction<models[] | null>>;
+    isDarkMode: boolean;
+    setIsDarkMode: (value: boolean) => void;
 }
 
 export const ModelContext = createContext<ModelContextProps>({
@@ -37,6 +39,8 @@ export const ModelContext = createContext<ModelContextProps>({
     setIsSideOpen: () => { },
     listModels: null,
     setListModels: () => { },
+    isDarkMode: false,
+    setIsDarkMode: () => { },
 });
 
 export const ModelContextProvider = ({ children }: { children: ReactNode }) => {
@@ -45,21 +49,25 @@ export const ModelContextProvider = ({ children }: { children: ReactNode }) => {
     const [isThinking, setIsThinking] = useState<boolean>(false);
     const [isSideOpen, setIsSideOpen] = useState<boolean>(false);
     const [listModels, setListModels] = useState<models[] | null>(null);
+    const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+
     useEffect(() => {
-            const fetchModels = async () => {
-                try {
-                    const { models }: {models: models[]} = await ollama.list();
-                    models.sort((a, b) => a.name.localeCompare(b.name));
-                    setListModels(models);
-                    if (model === "") {
-                        setModel(models[0].name);
-                    }
-                } catch (error) {
-                    console.error("Fetch error:", error);
+        const fetchModels = async () => {
+            try {
+                const { models }: { models: models[] } = await ollama.list();
+                models.sort((a, b) => a.name.localeCompare(b.name));
+                setListModels(models);
+                if (model === "") {
+                    setModel(models[0].name);
                 }
-            };
-            fetchModels();
-        }, []);
+            } catch (error) {
+                console.error("Fetch error:", error);
+            }
+        };
+        const darkModePreference = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        setIsDarkMode(darkModePreference);
+        fetchModels();
+    }, []);
 
     return (
         <ModelContext.Provider
@@ -74,6 +82,8 @@ export const ModelContextProvider = ({ children }: { children: ReactNode }) => {
                 setIsSideOpen,
                 listModels,
                 setListModels,
+                isDarkMode,
+                setIsDarkMode
             }}
         >
             {children}

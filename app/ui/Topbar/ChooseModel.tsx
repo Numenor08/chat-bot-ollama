@@ -22,7 +22,7 @@ const ChooseModel = () => {
         <>
             <button
                 onClick={handleSelectClick}
-                className={`${abel.className} text-nowrap text-lg text-neutral-700 z-20 cursor-pointer absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-min flex bg-white hover:bg-gray-200 hover:text-neutral-900 overflow-y-auto overflow-x-hidden rounded-lg transition-colors duration-150`}>
+                className={`${abel.className} text-nowrap text-lg text-neutral-700 dark:text-neutral-400 z-20 cursor-pointer absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-min flex bg-transparant hover:bg-gray-200 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-light overflow-y-auto overflow-x-hidden rounded-lg transition-colors duration-150`}>
                 <div className="p-1 pl-4 pr-10">
                     {listModels ? model : 'No Model Installed'}
                 </div>
@@ -30,9 +30,9 @@ const ChooseModel = () => {
             </button>
             {isOpen && (
                 <>
-                    <DropdownMenu className="absolute text-neutral-700 top-12 left-1/2 transform -translate-x-1/2 font-mono text-sm w-min max-h-40 flex border overflow-y-auto bg-white rounded-md p-1 z-20 ">
+                    <DropdownMenu className="absolute text-neutral-700 dark:text-light top-12 left-1/2 transform -translate-x-1/2 font-mono text-sm w-min max-h-40 flex border overflow-y-auto bg-white dark:bg-darkChat dark:border-neutral-700  rounded-md p-1 z-20 ">
                         {listModels?.map((model, i) => (
-                            <DropdownItem className="text-nowrap transition-colors duration-100" key={i} onClick={() => handleSelectModel(model.name)}>{model.name}</DropdownItem>
+                            <DropdownItem className="text-nowrap transition-colors duration-100 dark:hover:bg-neutral-700" key={i} onClick={() => handleSelectModel(model.name)}>{model.name}</DropdownItem>
                         ))}
                     </DropdownMenu>
                     <div
