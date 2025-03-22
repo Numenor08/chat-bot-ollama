@@ -1,10 +1,21 @@
-import { CopyIcon } from "@radix-ui/react-icons";
+'use client'
+
+import { useState } from "react";
+import { CopyIcon, CheckIcon } from "@radix-ui/react-icons";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { atomDark } from 'react-syntax-highlighter/dist/cjs/styles/prism'
 import Markdown from "react-markdown";
 import remarkGfm from 'remark-gfm'
 
 const ChatMarkdown = ({ content, className }: { content: string, className: string }) => {
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = (text: string) => {
+        navigator.clipboard.writeText(text);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    }
+
     return (
         <div className={className}>
             <Markdown
@@ -23,7 +34,11 @@ const ChatMarkdown = ({ content, className }: { content: string, className: stri
                             <>
                                 <div className="bg-[#50505a] text-gray-400 mb-0 rounded-t-xl px-4 py-2 flex items-center justify-between">
                                     <p className="hover:text-gray-200 cursor-default">{match[1]}</p>
-                                    <CopyIcon className="w-4 h-4 ml-2 cursor-pointer hover:text-white" onClick={() => navigator.clipboard.writeText(String(children))} />
+                                    {copied ?
+                                        <CheckIcon className="w-4 h-4 text-white" />
+                                        :
+                                        <CopyIcon className="w-4 h-4 ml-2 cursor-pointer hover:text-white" onClick={() => handleCopy(String(children))} />
+                                    }
                                 </div>
                                 <SyntaxHighlighter
                                     customStyle={{

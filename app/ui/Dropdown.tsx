@@ -23,7 +23,7 @@ export const DropdownItem = ({ className, children, onClick }: DropdownItem) => 
     return (
         <div onClick={e => {
             onClick?.();
-        }} className={`${className} flex items-center justify-start gap-2 cursor-pointer hover:bg-gray-200 w-full rounded-lg p-2`}>
+        }} className={`${className} flex items-center justify-start gap-2 cursor-pointer w-full rounded-lg p-2`}>
             {children}
         </div>
     )
