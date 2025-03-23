@@ -1,6 +1,8 @@
 {
-  "name": "chat-bot",
+  "name": "ollama-ui",
   "version": "0.1.0",
+  "author": "Athaya Razan Zaidan",
+  "description": "Run your own Ollama instance",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
