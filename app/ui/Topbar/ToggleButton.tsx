@@ -1,12 +1,11 @@
 'use client';
 import { Sun, Moon } from 'lucide-react';
 import { useModelContext } from '@/app/store/ContextProvider';
-import { useState } from 'react';
 
 function ToggleButton() {
-    const { isDarkMode, setIsDarkMode } = useModelContext();
+    const { isDarkMode, handleIsDark } = useModelContext();
     const handleToggle = () => {
-        setIsDarkMode(!isDarkMode);
+        handleIsDark(!isDarkMode);
     };
 
     return (

@@ -1,3 +1,4 @@
+// store/ContextProvider.tsx
 'use client';
 
 import { useState, ReactNode, useContext, useEffect } from "react";
@@ -25,7 +26,7 @@ interface ModelContextProps {
     listModels: models[] | null;
     setListModels: React.Dispatch<React.SetStateAction<models[] | null>>;
     isDarkMode: boolean;
-    setIsDarkMode: (value: boolean) => void;
+    handleIsDark: (value: boolean) => void;
 }
 
 export const ModelContext = createContext<ModelContextProps>({
@@ -40,7 +41,7 @@ export const ModelContext = createContext<ModelContextProps>({
     listModels: null,
     setListModels: () => { },
     isDarkMode: false,
-    setIsDarkMode: () => { },
+    handleIsDark: () => { },
 });
 
 export const ModelContextProvider = ({ children }: { children: ReactNode }) => {
@@ -50,6 +51,12 @@ export const ModelContextProvider = ({ children }: { children: ReactNode }) => {
     const [isSideOpen, setIsSideOpen] = useState<boolean>(false);
     const [listModels, setListModels] = useState<models[] | null>(null);
     const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+    const [isReady, setIsReady] = useState<boolean>(false);
+
+    const handleIsDark = (value: boolean) => {
+        setIsDarkMode(value);
+        localStorage.setItem('theme', value ? 'dark' : 'light');
+    }
 
     useEffect(() => {
         const fetchModels = async () => {
@@ -64,10 +71,31 @@ export const ModelContextProvider = ({ children }: { children: ReactNode }) => {
                 console.error("Fetch error:", error);
             }
         };
-        const darkModePreference = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        setIsDarkMode(darkModePreference);
-        fetchModels();
+
+        const getTheme = () => {
+            if (!localStorage.getItem('theme')) {
+                const darkModePreference = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                setIsDarkMode(darkModePreference);
+                localStorage.setItem('theme', darkModePreference ? 'dark' : 'light');
+            } else if (localStorage.getItem('theme') === 'dark') {
+                setIsDarkMode(true);
+            } else if (localStorage.getItem('theme') === 'light') {
+                setIsDarkMode(false);
+            }
+        };
+
+        const initializeApp = async () => {
+            getTheme();
+            await fetchModels();
+            setIsReady(true);
+        };
+
+        initializeApp();
     }, []);
+
+    if (!isReady) {
+        return null;
+    }
 
     return (
         <ModelContext.Provider
@@ -83,7 +111,7 @@ export const ModelContextProvider = ({ children }: { children: ReactNode }) => {
                 listModels,
                 setListModels,
                 isDarkMode,
-                setIsDarkMode
+                handleIsDark
             }}
         >
             {children}

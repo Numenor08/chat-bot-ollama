@@ -1,12 +1,16 @@
 import type { Metadata, Viewport } from "next";
 import { inter } from "@/app/fonts";
 import Sidebar from "@/app/ui/Sidebar/Sidebar";
-import { ModelContextProvider } from "./store/ContextProvider";
+import { ModelContextProvider } from "@/app/store/ContextProvider";
+import NextTopLoader from 'nextjs-toploader';
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Chat Bot",
-  description: "Chat Bot UI Ollama",
+  title: "Ollama UI",
+  description: "Run your own Ollama instance",
+  icons: {
+    icon: "/favicon.ico?v=1",
+  }
 };
 
 export const viewport: Viewport = {
@@ -20,12 +24,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${inter.className} antialiased flex h-screen w-screen`}
-      >
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.className} antialiased flex h-screen w-screen`}>
         <ModelContextProvider>
           <Sidebar />
+          <NextTopLoader
+          showSpinner={false} 
+          color="#2563eb"
+          />
           {children}
         </ModelContextProvider>
       </body>

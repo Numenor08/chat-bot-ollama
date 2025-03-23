@@ -13,11 +13,10 @@ export default function Home() {
   return (
     <MainWrapper>
       <Topbar />
-      <div className="px-4 pb-6 flex items-center justify-center w-full h-full">
-        <div className="relative flex flex-col items-center justify-center py-8 w-full min-w-80 max-w-[50rem] gap-12">
+      <div className="px-4 flex items-center justify-center w-full h-full">
+        <div className="relative flex flex-col items-center justify-center my-8 w-full min-w-80 max-w-[50rem] gap-12">
           <div className="flex flex-col items-center justify-center gap-4">
             {isDarkMode ? (
-
               <Image src="/ollama-black.png" width={130} height={130} className="max-sm:w-24" alt="Ollama White Logo" />
             ) : (
 

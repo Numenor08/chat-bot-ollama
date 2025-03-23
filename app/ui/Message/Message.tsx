@@ -5,6 +5,7 @@ import ThoughtMessage from "@/app/ui/Message/ThoughtMessage";
 import { ThreeDots } from "react-loader-spinner";
 import Image from 'next/image'
 import ChatMarkdown from "@/app/ui/Message/ChartMarkdown";
+import { useModelContext } from "@/app/store/ContextProvider";
 
 interface MessageItemProps {
     msg: Messages;
@@ -38,13 +39,13 @@ const MessageItem = memo(({ msg, index, messages }: MessageItemProps) => {
                             thought={thoughtContent}
                         />
                         {remainingContent && (
-                            <ChatMarkdown className="prose text-black dark:text-light dark:prose-invert max-w-max text-sm/6 w-full" content={remainingContent} />
+                            <ChatMarkdown className="prose text-black dark:prose-invert dark:text-light max-w-max text-sm/6 w-full" content={remainingContent} />
                         )}
                     </>
                 );
             }
             return (
-                <ChatMarkdown className="prose text-black dark:text-light dark:prose-invert max-w-max text-sm/6 w-full" content={content.trim()} />
+                <ChatMarkdown className="prose text-black dark:prose-invert dark:text-light max-w-max text-sm/6 w-full" content={content.trim()} />
             );
         };
     }, [index, messages]);
@@ -76,6 +77,7 @@ const MessageList = memo(({ previousMessages, className, currentMessage, isPendi
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
     const [isAutoScroll, setIsAutoScroll] = useState(true);
+    const { isDarkMode } = useModelContext();
 
     useEffect(() => {
         if (isAutoScroll) {
@@ -111,11 +113,11 @@ const MessageList = memo(({ previousMessages, className, currentMessage, isPendi
             )}
             {isPending && !hasError && (
                 <div className="flex justify-start items-center px-4 py-2 my-8">
-                    <ThreeDots color="#141414" height={15} width={15} />
+                    <ThreeDots color={`${isDarkMode ? '#ececec' : '#141414'}`} height={15} width={15} />
                 </div>
             )}
             {hasError && (
-                <div className="flex justify-start items-center px-4 py-2 my-8 text-red-500">
+                <div className="flex justify-start items-center px-4 py-2 my-8 rounded-lg text-red-500 bg-red-100 dark:text-white dark:bg-red-700">
                     Server Error!
                 </div>
             )}

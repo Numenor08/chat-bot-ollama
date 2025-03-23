@@ -100,7 +100,7 @@ const InputPrompt = ({
   }, [])
 
   return (
-    <div className="w-full pb-4 px-3">
+    <div className="w-full h-min px-3">
       <form
         ref={formRef}
         onSubmit={handleSubmit}
@@ -190,8 +190,8 @@ const InputPrompt = ({
       </form>
 
       {/* Recomentation */}
-      <div className="text-xs tracking-tigh flex justify-center mt-4 gap-4 flex-wrap">
-        {!threadId && recomendation.map((item, index) => (
+      {!threadId && <div className="text-xs tracking-tigh flex justify-center mt-4 gap-4 flex-wrap">
+        {recomendation.map((item, index) => (
           <div
             key={index}
             onClick={() => handleRecomendation(item.msg)}
@@ -206,6 +206,7 @@ const InputPrompt = ({
           </div>
         ))}
       </div>
+      }
 
     </div>
   )

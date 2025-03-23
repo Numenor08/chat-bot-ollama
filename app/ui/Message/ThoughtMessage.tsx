@@ -35,7 +35,7 @@ const ThoughtMessage = ({ thought, reasoningTime } : { thought: string, reasonin
             {isExpanded && (
                 <>
                     {/* Separator Line */}
-                    <div className="absolute left-[18px] top-10 w-px h-[calc(100%-43px)] bg-gray-200 dark:bg-neutral-500" />
+                    <div className="absolute left-[18px] top-10 w-px h-[calc(100%-43px)] bg-gray-200 dark:bg-neutral-700" />
 
                     <div className='relative pl-9 mb-12'>
                         <div className='flex flex-col gap-3 text-xs/6 text-gray-400 dark:text-neutral-500'>

@@ -197,13 +197,13 @@ const ChatApp = ({ className }: {className?: string}) => {
 
     return (
         <div className={`${className} `}>
-            {<MessageList
+            <MessageList
                 className="text-sm w-full h-full overflow-y-auto px-4 sidebar-custom"
                 previousMessages={previousMessages}
                 currentMessage={currentMessage}
                 isPending={isPending}
                 hasError={hasError}
-            />}
+            />
             <InputPrompt onSendMessage={handleSendMessage} handleCancelRequest={handleCancelRequest} />
         </div>
     );
