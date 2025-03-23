@@ -139,12 +139,11 @@ function SideThread({ isSideOpen, threadId, value }: SideThreadProps) {
                             e.stopPropagation();
                             setIsThreadOpen(!isThreadOpen);
                         }}
-                        className="w-full cursor-pointer"
+                        className="w-full cursor-pointer select-none"
                     />
-                    {isThreadOpen && (
-                        <>
                             <DropdownMenu
                                 className="absolute border dark:border-neutral-600 font-normal top-6 right-0 bg-white text-black dark:bg-darkChat dark:text-light rounded-md p-1 w-28 z-20"
+                                isOpen={isThreadOpen}
                                 ref={dropdownRef}
                             >
                                 <DropdownItem
@@ -166,8 +165,6 @@ function SideThread({ isSideOpen, threadId, value }: SideThreadProps) {
                                     Delete
                                 </DropdownItem>
                             </DropdownMenu>
-                        </>
-                    )}
                 </div>
             </div>
 
