@@ -38,6 +38,7 @@ const ChooseModel = () => {
                 <>
                     <DropdownMenu
                         isOpen={isOpen}
+                        isCenter={true}
                         className="absolute text-neutral-700 dark:text-light top-14 left-1/2 font-mono text-sm w-min max-h-40 flex border overflow-y-auto bg-white dark:bg-darkChat dark:border-neutral-700 rounded-md p-1 z-20"
                     >
                         {listModels?.map((model, i) => (

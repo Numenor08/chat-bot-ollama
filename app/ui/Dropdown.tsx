@@ -5,22 +5,23 @@ interface DropdownProps {
     children?: React.ReactNode;
     className?: string;
     ref?: React.RefObject<HTMLDivElement | null>;
-    isOpen?: boolean; // Tambahkan prop untuk menentukan apakah dropdown terbuka
+    isOpen?: boolean;
+    isCenter?: boolean;
 }
 
 interface DropdownItem extends DropdownProps {
     onClick?: () => void;
 }
 
-export const DropdownMenu = ({ children, className, ref, isOpen }: DropdownProps) => {
+export const DropdownMenu = ({ children, className, ref, isOpen, isCenter = false }: DropdownProps) => {
     return (
         <AnimatePresence>
             {isOpen && (
                 <motion.div
-                    initial={{ opacity: 0, y: -10, x: '-50%' }} // Animasi saat muncul
-                    animate={{ opacity: 1, y: 0, x: '-50%' }} // Animasi saat aktif
-                    exit={{ opacity: 0, y: -10 }} // Animasi saat menghilang
-                    transition={{ duration: 0.2 }} // Durasi animasi
+                    initial={{ opacity: 0, y: -10, x: `${isCenter && '-50%'}` }}
+                    animate={{ opacity: 1, y: 0, x: `${isCenter && '-50%'}` }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
                     onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
