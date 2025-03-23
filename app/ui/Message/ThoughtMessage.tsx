@@ -9,7 +9,7 @@ import remarkGfm from 'remark-gfm'
 import { useModelContext } from '@/app/store/ContextProvider'
 
 const ThoughtMessage = ({ thought, reasoningTime } : { thought: string, reasoningTime: number } ) => {
-    const { isThinking } = useModelContext()
+    const { isThinking, isDarkMode } = useModelContext()
     const [isExpanded, setIsExpanded] = useState(true)
     if (!thought) {
         return null
@@ -25,10 +25,11 @@ const ThoughtMessage = ({ thought, reasoningTime } : { thought: string, reasonin
                 </span>
                 <TailSpin
                     visible={isThinking}
+                    color={isDarkMode ? '#fff' : '#000'}
                     height={12}
                     width={12}
                     ariaLabel="loading"
-                    wrapperClass="inline-block text-black dark:text-white"
+                    wrapperClass="inline-block"
                 />
                 <CaretDownIcon className={`${isExpanded ? '' : 'rotate-180'} text-black dark:text-white`} />
             </div>
