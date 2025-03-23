@@ -1,12 +1,8 @@
 # Chat-Bot Ollama (Ollama UI)
 
----
-
 A fun project integrating Ollama with Next.js to create a chatbot interface. This project demonstrates how to use Ollama's AI models and manage local data storage with IndexedDB.
 
 ## Features
-
----
 
 * **Ollama Integration**: Communicates with Ollama AI models using the [Ollama.js](https://github.com/ollama/ollama-js) library.
 * **IndexedDB Support**: Uses the [Dexie.js](https://dexie.org/) library for efficient local data storage.
@@ -14,8 +10,6 @@ A fun project integrating Ollama with Next.js to create a chatbot interface. Thi
 * **Responsive UI**: Includes light and dark mode support.
 
 ## Screenshots
-
----
 
 Here are some screenshots of the application:
 
@@ -26,11 +20,10 @@ Here are some screenshots of the application:
 
 ### Light Mode
 
-![1742754667861](image/README/1742754667861.png)![Light Mode 2](public/Screenshot/light-2.png)
+![Light Mode 1](public/Screenshot/light-1.png)
+![Light Mode 2](public/Screenshot/light-2.png)
 
 ## Getting Started
-
----
 
 ### Prerequisites
 
@@ -57,12 +50,16 @@ ollama pull <model-name>
    cd chat-bot-ollama
    ```
 2. Install dependedncies:
-3. Start the development server:
-4. Open the application in your browser at `http://localhost:3000`.
+   ```bash
+   npm install
+   ```
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+5. Open the application in your browser at `http://localhost:3000`.
 
 ## Library Used
-
----
 
 Some major library this project used:
 
@@ -72,13 +69,9 @@ Some major library this project used:
 
 ## Contributing
 
----
-
 Contributions are welcome 😃! Feel free to open issues or submit pull requests.
 
 ## Todo
-
----
 
 * Add pull and create new model feature
 * Import and export chat history
@@ -86,7 +79,5 @@ Contributions are welcome 😃! Feel free to open issues or submit pull requests
 * Add toast scroll to bottom at message component
 
 ## Contributors
-
----
 
 **Athaya Razan Zaidan** ( [razan4zaidan@gmail.com](vscode-file://vscode-app/c:/Users/razan/AppData/Local/Programs/Microsoft%20VS%20Code/resources/app/out/vs/code/electron-sandbox/workbench/workbench.html) )
