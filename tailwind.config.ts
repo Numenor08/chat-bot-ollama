@@ -17,8 +17,8 @@ export default {
         darkChat: 'rgb(48,48,48)',
       },
       backgroundImage: {
-        darkModeBackground: "url('/bg-black.png')",
-        lightModeBackground: "url('/bg-white.png')",
+        darkModeBackground: "url('/bg-black.webp')",
+        lightModeBackground: "url('/bg-white.webp')",
       },
     },
   },
