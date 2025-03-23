@@ -13,7 +13,12 @@ interface DropdownItem extends DropdownProps {
 
 export const DropdownMenu = ({ children, className, ref }: DropdownProps) => {
     return (
-        <div ref={ref} className={`${className} cursor-default flex flex-col items-center justify-start shadow-md rounded-lg`}>
+        <div 
+        onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        }}
+        ref={ref} className={`${className} cursor-default flex flex-col items-center justify-start shadow-md rounded-lg`}>
             {children}
         </div>
     );
@@ -22,6 +27,8 @@ export const DropdownMenu = ({ children, className, ref }: DropdownProps) => {
 export const DropdownItem = ({ className, children, onClick }: DropdownItem) => {
     return (
         <div onClick={e => {
+            e.preventDefault();
+            e.stopPropagation();
             onClick?.();
         }} className={`${className} flex items-center justify-start gap-2 cursor-pointer w-full rounded-lg p-2`}>
             {children}

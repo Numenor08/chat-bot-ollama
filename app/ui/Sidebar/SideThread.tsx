@@ -97,52 +97,79 @@ function SideThread({ isSideOpen, threadId, value }: SideThreadProps) {
 
     return (
         <>
-            <Link href={`/c/${threadId}`} onClick={handleClick}>
-                <div
-                    className={`${isMatched ? 'bg-gray-200 dark:bg-neutral-700' : 'bg-red'} relative overflow-visible flex justify-between items-center p-[0.350rem] font-sans text-sm hover:bg-gray-100 dark:hover:bg-neutral-800 w-full rounded-lg cursor-pointer group`}
+            <div className="relative group">
+                {/* Link untuk navigasi */}
+                <Link
+                    href={`/c/${threadId}`}
+                    className={` flex justify-between items-center p-[0.350rem] font-sans text-sm group-hover:bg-gray-100 dark:group-hover:bg-neutral-800 w-full rounded-lg cursor-pointer ${
+                        isMatched ? 'bg-gray-200 dark:bg-neutral-700' : ''
+                    }`}
                 >
-                    <input maxLength={28} onKeyDown={handleKeyDown} ref={inputRef} onBlur={handleBlur} spellCheck='false' readOnly={!isEditMode} value={inputValue} onChange={handleChange} className={`${isEditMode ? 'bg-transparent cursor-text' : 'outline-none'} cursor-pointer p-[0.175rem] bg-transparent w-[80%] align-middle text-nowrap`}></input>
-                    <div
-                        className={`${isMatched || isThreadOpen ? 'opacity-100' : ''} relative flex justify-between items-center w-5 h-5 opacity-0 group-hover:opacity-100 font-bold text-gray-500 dark:text-neutral-400 hover:text-black dark:hover:text-white dots-container`}
-                    >
-                        <DotsHorizontalIcon
-                            onClick={(e) => {
-                                e.preventDefault();
-                                setIsThreadOpen(!isThreadOpen);
-                            }}
-                            className="w-full"
-                        />
-                        {isThreadOpen ? (
-                            <>
-                                <div
-                                    className={`fixed inset-0 cursor-auto z-10 ${isThreadOpen ? "pointer-events-auto w-full h-full" : "hidden pointer-events-none"}`}
-                                    onClick={() => setIsThreadOpen(false)}>
-                                </div>
-                                <DropdownMenu
-                                    className="absolute border dark:border-neutral-600 font-normal top-6 right-0 bg-white text-black dark:bg-darkChat dark:text-light rounded-md p-1 w-28 z-20 "
-                                    ref={dropdownRef}
+                    <input
+                        maxLength={28}
+                        onKeyDown={handleKeyDown}
+                        ref={inputRef}
+                        onBlur={handleBlur}
+                        spellCheck="false"
+                        readOnly={!isEditMode}
+                        value={inputValue}
+                        onChange={handleChange}
+                        className={`${
+                            isEditMode ? 'bg-transparent cursor-text' : 'outline-none'
+                        } cursor-pointer p-[0.175rem] bg-transparent w-[80%] align-middle text-nowrap`}
+                    />
+                    {isThreadOpen && (
+                        <div
+                        className={`fixed inset-0 cursor-auto z-20`}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setIsThreadOpen(false);
+                        }}
+                    ></div>
+                    )}
+                </Link>
+
+                {/* DotsHorizontalIcon dan DropdownMenu */}
+                <div
+                    className={`opacity-0 ${isMatched || isThreadOpen ? 'opacity-100' : ''} z-20 text-sm group-hover:opacity-100 absolute top-1/2 transform -translate-y-1/2 right-2 flex items-center justify-center w-5 h-5 font-bold text-gray-500 dark:text-neutral-400 hover:text-black dark:hover:text-white dots-container`}
+                >
+                    <DotsHorizontalIcon
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setIsThreadOpen(!isThreadOpen);
+                        }}
+                        className="w-full cursor-pointer"
+                    />
+                    {isThreadOpen && (
+                        <>
+                            <DropdownMenu
+                                className="absolute border dark:border-neutral-600 font-normal top-6 right-0 bg-white text-black dark:bg-darkChat dark:text-light rounded-md p-1 w-28 z-20"
+                                ref={dropdownRef}
+                            >
+                                <DropdownItem
+                                    onClick={handleEditMode}
+                                    className="hover:bg-gray-200 dark:hover:bg-neutral-700"
                                 >
-                                    <DropdownItem onClick={handleEditMode} className='hover:bg-gray-200 dark:hover:bg-neutral-700'>
-                                        <div className='w-5 h-5 flex items-center justify-center'>
-                                            <Pencil2Icon />
-                                        </div>
-                                        Edit
-                                    </DropdownItem>
-                                    <DropdownItem
-                                        className='text-red-600 font-semibold hover:bg-gray-200 dark:hover:bg-neutral-700'
-                                        onClick={() => setIsDeleteModalOpen(true)}
-                                    >
-                                        <div className='w-5 h-5 flex items-center justify-center'>
-                                            <TrashIcon className='h-full w-full' />
-                                        </div>
-                                        Delete
-                                    </DropdownItem>
-                                </DropdownMenu>
-                            </>
-                        ) : null}
-                    </div>
+                                    <div className="w-5 h-5 flex items-center justify-center">
+                                        <Pencil2Icon />
+                                    </div>
+                                    Edit
+                                </DropdownItem>
+                                <DropdownItem
+                                    className="text-red-600 font-semibold hover:bg-gray-200 dark:hover:bg-neutral-700"
+                                    onClick={() => setIsDeleteModalOpen(true)}
+                                >
+                                    <div className="w-5 h-5 flex items-center justify-center">
+                                        <TrashIcon className="h-full w-full" />
+                                    </div>
+                                    Delete
+                                </DropdownItem>
+                            </DropdownMenu>
+                        </>
+                    )}
                 </div>
-            </Link>
+            </div>
 
             <ConfirmationModal
                 isOpen={isDeleteModalOpen}
