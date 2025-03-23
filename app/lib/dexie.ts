@@ -12,7 +12,7 @@ export interface Message {
     thread_id: string;
     role: 'user' | 'assistant';
     content: string;
-    image?: string[] | null;
+    images?: string[] | null;
     reasoning_time?: number | null;
     created_at: Date;
 }
@@ -26,7 +26,7 @@ class ChatBotDB extends Dexie {
 
         this.version(1).stores({
             threads: 'id, title, created_at, updated_at',
-            messages: 'id, thread_id, role, content, image, reasoning_time, created_at'
+            messages: 'id, thread_id, role, content, images, reasoning_time, created_at'
         });
 
         this.threads.hook('creating', (_, obj) => {
@@ -99,7 +99,7 @@ class ChatBotDB extends Dexie {
         await this.threads.update(threadId, { title, updated_at: new Date() });
     }
 
-    async createMessage(message: Pick<Message, 'thread_id' | 'role' | 'content' | 'image' | 'reasoning_time'>) {
+    async createMessage(message: Pick<Message, 'thread_id' | 'role' | 'content' | 'images' | 'reasoning_time'>) {
         const messageId = crypto.randomUUID();
 
         await this.transaction('rw', this.threads, this.messages, async () => {

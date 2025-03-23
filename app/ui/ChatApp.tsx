@@ -3,21 +3,22 @@
 import { useState, useRef, useEffect } from "react";
 import MessageList from "@/app/ui/Message/Message";
 import InputPrompt from "@/app/ui/InputPrompt";
-import { Messages } from "@/app/types/types";
+import { Message } from "@/app/types/types";
 import { useModelContext } from "@/app/store/ContextProvider";
+import { convertImageToBase64, compressImage } from "@/app/lib/image";
 import { db } from "@/app/lib/dexie";
 import { useParams, useRouter } from "next/navigation";
 import ollama from 'ollama/browser'
 
-const ChatApp = ({ className }: {className?: string}) => {
-    const [previousMessages, setPreviousMessages] = useState<Messages[]>([]);
-    const [currentMessage, setCurrentMessage] = useState<Messages | null>(null);
+const ChatApp = ({ className }: { className?: string }) => {
+    const [previousMessages, setPreviousMessages] = useState<Message[]>([]);
+    const [currentMessage, setCurrentMessage] = useState<Message | null>(null);
     const [isPending, setIsPending] = useState(false);
     const [hasError, setHasError] = useState(false);
     const { setLoading, setIsThinking } = useModelContext();
     const { threadId } = useParams();
     const router = useRouter();
-    const currentMessageRef = useRef<Messages | null>(null);
+    const currentMessageRef = useRef<Message | null>(null);
     const startReasoning = useRef<number | null>(null);
 
     const handleCreateThread = async (title: string) => {
@@ -29,16 +30,25 @@ const ChatApp = ({ className }: {className?: string}) => {
         if (!prompt.trim()) return;
 
         let currentThreadId: string | string[] | undefined = threadId;
+        let imageBase64: string | null = null;
+        if (image) {
+            if (image instanceof File) {
+                const compressImageFile = await compressImage(image);
+                imageBase64 = await convertImageToBase64(compressImageFile);
+            } else {
+                imageBase64 = image;
+            }
+        }
         const newTitle: string =
-            prompt.trim().length > 20
-                ? prompt.trim().slice(0, 1).toUpperCase() + prompt.trim().slice(1, 20) + "..."
+            prompt.trim().length > 28
+                ? prompt.trim().slice(0, 1).toUpperCase() + prompt.trim().slice(1, 28) + "..."
                 : prompt.trim().charAt(0).toUpperCase() + prompt.trim().slice(1);
 
         if (!currentThreadId) {
             localStorage.setItem("pendingPrompt", prompt);
             localStorage.setItem("pendingModel", model);
-            if (image) {
-                localStorage.setItem("pendingImage", image as string);
+            if (imageBase64) {
+                localStorage.setItem("pendingImage", imageBase64);
             }
 
             currentThreadId = await handleCreateThread(newTitle);
@@ -48,11 +58,11 @@ const ChatApp = ({ className }: {className?: string}) => {
                 thread_id: currentThreadId as string,
                 role: "user",
                 content: prompt,
-                image: image ? [image as string] : null,
+                images: imageBase64 ? [imageBase64] : null,
                 reasoning_time: null,
             });
 
-            const InputMessages: Messages = { role: "user", content: prompt, image: image ? [image as string] : null };
+            const InputMessages: Message = { role: "user", content: prompt, images: imageBase64 ? [imageBase64] : [] };
 
             setPreviousMessages((prev) => [
                 ...prev,
@@ -63,7 +73,7 @@ const ChatApp = ({ className }: {className?: string}) => {
         }
     };
 
-    const sendMessageToOllama = async (updatedMessages: Messages[], model: string, currentThreadId: string | string[]) => {
+    const sendMessageToOllama = async (updatedMessages: Message[], model: string, currentThreadId: string | string[]) => {
         try {
             setLoading(true);
             setIsPending(true);
@@ -99,13 +109,13 @@ const ChatApp = ({ className }: {className?: string}) => {
                         content: botReply,
                         reasoningTime: reasoningTime,
                     }
-                    return currentMessageRef.current as Messages;
+                    return currentMessageRef.current as Message;
                 });
             }
 
             setPreviousMessages((prev) => [
                 ...prev,
-                currentMessageRef.current as Messages,
+                currentMessageRef.current as Message,
             ]);
             await db.createMessage({
                 thread_id: currentThreadId as string,
@@ -123,7 +133,7 @@ const ChatApp = ({ className }: {className?: string}) => {
                     console.warn("Request was aborted");
                     setCurrentMessage(null);
                     if (currentMessageRef.current) {
-                        const remainderMessage: Messages = currentMessageRef.current;
+                        const remainderMessage: Message = currentMessageRef.current;
                         const newReasoningTime = remainderMessage.reasoningTime ? remainderMessage.reasoningTime : clientReasoningTime;
                         remainderMessage.reasoningTime = newReasoningTime;
                         setPreviousMessages((prev) => [...prev, remainderMessage]);
@@ -131,7 +141,7 @@ const ChatApp = ({ className }: {className?: string}) => {
                             thread_id: currentThreadId as string,
                             role: 'assistant',
                             content: remainderMessage.content,
-                            image: null,
+                            images: null,
                             reasoning_time: remainderMessage.reasoningTime,
                         });
                     }
@@ -159,7 +169,7 @@ const ChatApp = ({ className }: {className?: string}) => {
         const fetchMessages = async () => {
             try {
                 const fetchedMessages = await db.getMessagesByThreadId(threadId as string);
-                setPreviousMessages(fetchedMessages.map((msg) => ({ ...msg, reasoningTime: msg.reasoning_time ?? undefined })) as Messages[]);
+                setPreviousMessages(fetchedMessages.map((msg) => ({ ...msg, reasoningTime: msg.reasoning_time ?? undefined })) as Message[]);
             } catch (error) {
                 console.error("Error fetching messages:", error);
             }

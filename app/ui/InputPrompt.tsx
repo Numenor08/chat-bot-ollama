@@ -104,7 +104,7 @@ const InputPrompt = ({
       <form
         ref={formRef}
         onSubmit={handleSubmit}
-        className={`relative bg-white dark:bg-darkChat flex flex-col items-center justify-center text-sm w-full border dark:border-neutral-700 rounded-3xl py-3 pl-12 pr-14 shadow-[0_4px_5px_-2px_rgb(0,0,0,0.1)] focus:shadow-[0_4px_5px_-1px_rgb(0,0,0,0.1)]`}
+        className={`relative bg-white dark:bg-darkChat flex flex-col items-start justify-center text-sm w-full border dark:border-neutral-700 rounded-3xl py-3 pl-12 pr-14 shadow-[0_4px_5px_-2px_rgb(0,0,0,0.1)] focus:shadow-[0_4px_5px_-1px_rgb(0,0,0,0.1)]`}
       >
         {image && (
           <div className="relative w-min min-w-24 min-h-16 mb-4">

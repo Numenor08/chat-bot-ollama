@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState, useMemo, memo } from "react";
-import { Messages } from "@/app/types/types";
+import { Message } from "@/app/types/types";
 import ThoughtMessage from "@/app/ui/Message/ThoughtMessage";
 import { ThreeDots } from "react-loader-spinner";
 import Image from 'next/image'
@@ -8,15 +8,15 @@ import ChatMarkdown from "@/app/ui/Message/ChartMarkdown";
 import { useModelContext } from "@/app/store/ContextProvider";
 
 interface MessageItemProps {
-    msg: Messages;
+    msg: Message;
     index: number;
-    messages: Messages[];
+    messages: Message[];
 }
 
 interface MessageListProps {
-    previousMessages: Messages[]; 
+    previousMessages: Message[]; 
     className?: string;
-    currentMessage: Messages | null; 
+    currentMessage: Message | null; 
     isPending: boolean; 
     hasError: boolean; 
 }
@@ -59,9 +59,9 @@ const MessageItem = memo(({ msg, index, messages }: MessageItemProps) => {
                         renderContent(msg.content, msg.reasoningTime || 0)
                     )}
                 </div>
-                {msg.image && msg.image.length > 0 && (
+                {msg.images && msg.images.length > 0 && (
                     <Image
-                        src={`data:image/png;base64,${msg.image[0]}`}
+                        src={`data:image/png;base64,${msg.images[0]}`}
                         width={240}
                         height={200}
                         alt={`Image ${index}`}

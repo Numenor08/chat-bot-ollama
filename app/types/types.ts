@@ -1,6 +1,6 @@
-export interface Messages {
+export interface Message {
     role: "user" | "assistant";
     content: string;
     reasoningTime?: number;
-    image?: Uint8Array[] | string[] | null;
+    images?: Uint8Array[] | string[];
 }
