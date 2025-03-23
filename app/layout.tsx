@@ -29,6 +29,7 @@ export default function RootLayout({
         <ModelContextProvider>
           <Sidebar />
           <NextTopLoader
+          height={2}
           showSpinner={false} 
           color="#2563eb"
           />

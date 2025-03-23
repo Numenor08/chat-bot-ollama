@@ -17,7 +17,7 @@ function Sidebar() {
     <>
       {/* Sidebar Overlay*/}
       <div
-        className={`fixed inset-0 bg-black z-40 ${isSideOpen ? "opacity-30" : "opacity-0 hidden pointer-events-none"
+        className={`${isDarkMode && 'dark'} fixed inset-0 bg-black z-40 ${isSideOpen ? "opacity-30 dark:opacity-20" : "opacity-0 hidden pointer-events-none"
           } lg:hidden`}
         onClick={() => setIsSideOpen(false)}></div>
       {/*  */}
