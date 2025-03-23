@@ -28,7 +28,6 @@ const InputPrompt = ({
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (!prompt.trim()) return
     onSendMessage(prompt, model, image)
     setImage(null)
     setPrompt("")
@@ -182,6 +181,7 @@ const InputPrompt = ({
         ) : (
           <button
             type="submit"
+            disabled={!model || !prompt.trim()}
             className="absolute bottom-[0.35rem] right-2 bg-black dark:bg-light cursor-pointer hover:opacity-80 p-2 w-8 h-8 rounded-full flex items-center justify-center"
           >
             <PaperPlaneIcon className="text-white dark:text-black w-full h-full ml-[2px]" />

@@ -27,6 +27,7 @@ interface ModelContextProps {
     setListModels: React.Dispatch<React.SetStateAction<models[] | null>>;
     isDarkMode: boolean;
     handleIsDark: (value: boolean) => void;
+    isOllamaReady: boolean;
 }
 
 export const ModelContext = createContext<ModelContextProps>({
@@ -42,6 +43,7 @@ export const ModelContext = createContext<ModelContextProps>({
     setListModels: () => { },
     isDarkMode: false,
     handleIsDark: () => { },
+    isOllamaReady: false,
 });
 
 export const ModelContextProvider = ({ children }: { children: ReactNode }) => {
@@ -52,6 +54,7 @@ export const ModelContextProvider = ({ children }: { children: ReactNode }) => {
     const [listModels, setListModels] = useState<models[] | null>(null);
     const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
     const [isReady, setIsReady] = useState<boolean>(false);
+    const [isOllamaReady, setIsOllamaReady] = useState<boolean>(false);
 
     const handleIsDark = (value: boolean) => {
         setIsDarkMode(value);
@@ -63,11 +66,13 @@ export const ModelContextProvider = ({ children }: { children: ReactNode }) => {
             try {
                 const { models }: { models: models[] } = await ollama.list();
                 models.sort((a, b) => a.name.localeCompare(b.name));
+                setIsOllamaReady(true);
                 setListModels(models);
                 if (model === "") {
                     setModel(models[0].name);
                 }
             } catch (error) {
+                setIsOllamaReady(false);
                 console.error("Fetch error:", error);
             }
         };
@@ -111,7 +116,8 @@ export const ModelContextProvider = ({ children }: { children: ReactNode }) => {
                 listModels,
                 setListModels,
                 isDarkMode,
-                handleIsDark
+                handleIsDark,
+                isOllamaReady
             }}
         >
             {children}
